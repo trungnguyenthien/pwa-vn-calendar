@@ -1,77 +1,53 @@
 /* ==========================================================================
-   Lịch Việt PWA - Modern Design System & Layout
-   Optimized for Portrait Viewport (100dvh) with zero scrolling
+   Lịch Việt PWA - Dedicated Light Theme (Thanh thoát, Tinh tế, Rõ nét)
+   Optimized for Portrait Viewport (100dvh) displaying 2 full months simultaneously
    ========================================================================== */
 
 :root {
-  /* Color Palette - Dark Mode (Default) */
-  --bg-primary: #090d16;
-  --bg-surface: #111827;
-  --bg-surface-elevated: #1a2337;
-  --bg-card: rgba(22, 31, 49, 0.75);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.18);
+  /* Elegant, Airy Light Palette */
+  --bg-primary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-card: #ffffff;
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-dimmed: rgba(148, 163, 184, 0.28);
+  --border-subtle: #e2e8f0;
+  --border-active: #cbd5e1;
+  --border-card: #e5e7eb;
 
-  /* Accents */
-  --accent-red: #f43f5e;
-  --accent-red-bg: rgba(244, 63, 94, 0.12);
-  --accent-gold: #f59e0b;
-  --accent-gold-bg: rgba(245, 158, 11, 0.12);
-  --accent-blue: #38bdf8;
-  --accent-blue-bg: rgba(56, 189, 248, 0.12);
-  --accent-emerald: #10b981;
-  
-  /* Primary Interactive Gradient */
-  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-  --primary-glow: rgba(79, 70, 229, 0.4);
+  /* Typography Colors - High Contrast, Highly Legible */
+  --text-primary: #0f172a;        /* Deep crisp slate-900 */
+  --text-secondary: #334155;      /* Slate-700 */
+  --text-muted: #64748b;          /* Slate-500 */
+  --text-dimmed: #cbd5e1;         /* Muted for outside month days */
 
-  /* Elevation & Shadows */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  /* Distinct Accents */
+  --accent-red: #dc2626;          /* Sunday & Lunar 1st */
+  --accent-red-bg: #fee2e2;
+  --accent-blue: #2563eb;         /* Saturday & Primary Action */
+  --accent-blue-bg: #eff6ff;
+  --accent-gold: #b45309;         /* Rằm (15 âm) & Can Chi */
+  --accent-gold-bg: #fef3c7;
+
+  /* Today Highlight */
+  --today-bg: #2563eb;
+  --today-text: #ffffff;
+  --today-glow: rgba(37, 99, 235, 0.22);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
 
   /* Typography */
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  
+
   /* UI Metrics */
-  --header-height: 54px;
+  --header-height: 50px;
+  --hint-height: 24px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
-}
-
-[data-theme="light"] {
-  --bg-primary: #f1f5f9;
-  --bg-surface: #ffffff;
-  --bg-surface-elevated: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --border-subtle: rgba(0, 0, 0, 0.06);
-  --border-active: rgba(0, 0, 0, 0.14);
-
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --text-dimmed: rgba(100, 116, 139, 0.25);
-
-  --accent-red: #e11d48;
-  --accent-red-bg: rgba(225, 29, 72, 0.08);
-  --accent-gold: #d97706;
-  --accent-gold-bg: rgba(217, 119, 6, 0.1);
-  --accent-blue: #0284c7;
-  --accent-blue-bg: rgba(2, 132, 199, 0.08);
-
-  --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  --primary-glow: rgba(37, 99, 235, 0.25);
-
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12);
 }
 
 /* ==========================================================================
@@ -113,7 +89,7 @@ html, body {
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
-  background: radial-gradient(circle at 50% 0%, var(--bg-surface-elevated) 0%, var(--bg-primary) 70%);
+  background-color: var(--bg-primary);
   position: relative;
   overflow: hidden;
 }
@@ -146,23 +122,23 @@ html, body {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 9999px;
   padding: 6px 14px;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 14.5px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   letter-spacing: -0.01em;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .header-picker-btn:hover {
   border-color: var(--border-active);
-  transform: translateY(-1px);
+  background: var(--bg-surface-elevated);
 }
 
 .header-picker-btn:active {
@@ -170,9 +146,9 @@ html, body {
 }
 
 .header-picker-btn .chevron-icon {
-  width: 14px;
-  height: 14px;
-  color: var(--text-secondary);
+  width: 15px;
+  height: 15px;
+  color: var(--text-muted);
   transition: transform 0.2s;
 }
 
@@ -185,8 +161,8 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: transparent;
   border: 1px solid transparent;
@@ -210,20 +186,20 @@ html, body {
   align-items: center;
   gap: 4px;
   height: 32px;
-  padding: 0 10px;
+  padding: 0 12px;
   border-radius: 9999px;
-  background: var(--accent-red-bg);
-  border: 1px solid rgba(244, 63, 94, 0.25);
-  color: var(--accent-red);
+  background: var(--accent-blue-bg);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  color: var(--accent-blue);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .today-chip-btn:hover {
-  background: var(--accent-red);
+  background: var(--accent-blue);
   color: #ffffff;
 }
 
@@ -241,6 +217,7 @@ html, body {
   position: relative;
   overflow: hidden;
   touch-action: none;
+  background: var(--bg-primary);
 }
 
 /* Stage container that gets transformed during gestures */
@@ -256,11 +233,11 @@ html, body {
 }
 
 .calendar-stage.animating {
-  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==========================================================================
-   Two-Month View Cards
+   Two-Month View Cards - Displayed 100% Simultaneously
    ========================================================================== */
 
 .month-card {
@@ -268,12 +245,13 @@ html, body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 4px 8px 6px 8px;
+  padding: 6px 10px;
   position: relative;
+  background: var(--bg-surface);
 }
 
 .month-card:first-child {
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1.5px solid var(--border-subtle);
 }
 
 /* Month Sub-header */
@@ -281,54 +259,53 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2px 6px 4px 6px;
-  height: 24px;
-  min-height: 24px;
+  padding: 1px 4px 5px 4px;
+  height: 26px;
+  min-height: 26px;
 }
 
 .month-title {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .month-title-badge {
   display: inline-block;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--primary-gradient);
-  color: #ffffff;
-  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--accent-blue);
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0;
 }
 
 .month-lunar-tag {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent-gold);
 }
 
 /* Day of Week Row */
 .weekdays-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  height: 20px;
-  min-height: 20px;
+  height: 22px;
+  min-height: 22px;
   text-align: center;
   align-items: center;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .weekday-col.is-sunday {
@@ -359,25 +336,29 @@ html, body {
   justify-content: center;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.15s, transform 0.1s;
+  background: transparent;
+  border: none;
+  transition: background-color 0.12s, transform 0.1s;
   padding: 1px 2px;
+  text-decoration: none;
 }
 
 .day-cell:active {
   transform: scale(0.92);
 }
 
-/* Solar Date Number */
+/* Solar Date Number - Big, Bold, Clean & Crisp */
 .solar-num {
-  font-size: clamp(14px, 2.6vh, 20px);
-  font-weight: 700;
+  font-size: clamp(15px, 2.7vh, 21px);
+  font-weight: 800;
   line-height: 1.1;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-/* Lunar Date Number */
+/* Lunar Date Number - Distinct & Readable */
 .lunar-num {
-  font-size: clamp(9px, 1.4vh, 11px);
+  font-size: clamp(9.5px, 1.45vh, 12px);
   font-weight: 600;
   line-height: 1;
   margin-top: 2px;
@@ -386,7 +367,11 @@ html, body {
 
 /* Outside Days (previous/next month fillers) */
 .day-cell.is-outside {
-  opacity: 0.22;
+  opacity: 0.28;
+}
+
+.day-cell.is-outside .solar-num {
+  color: var(--text-muted);
 }
 
 /* Sunday Highlight */
@@ -394,7 +379,7 @@ html, body {
   color: var(--accent-red);
 }
 
-/* Saturday Subtle Tint */
+/* Saturday Subtle Highlight */
 .day-cell.is-saturday .solar-num {
   color: var(--accent-blue);
 }
@@ -404,7 +389,7 @@ html, body {
   color: var(--accent-red);
   font-weight: 800;
   background: var(--accent-red-bg);
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 4px;
 }
 
@@ -413,43 +398,45 @@ html, body {
   color: var(--accent-gold);
   font-weight: 800;
   background: var(--accent-gold-bg);
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 4px;
 }
 
 /* Today Cell Highlight */
 .day-cell.is-today {
-  background: var(--primary-gradient);
-  box-shadow: 0 4px 12px var(--primary-glow);
+  background: var(--today-bg);
+  box-shadow: 0 4px 12px var(--today-glow);
 }
 
 .day-cell.is-today .solar-num,
 .day-cell.is-today .lunar-num {
-  color: #ffffff !important;
+  color: var(--today-text) !important;
 }
 
 .day-cell.is-today.is-lunar-first .lunar-num,
 .day-cell.is-today.is-lunar-full .lunar-num {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 /* Selected Cell (Tapped) */
 .day-cell.is-selected:not(.is-today) {
   border: 1.5px solid var(--accent-blue);
-  background: var(--bg-surface-elevated);
+  background: var(--accent-blue-bg);
 }
 
-/* Gesture Hints on Bottom */
+/* Gesture Hint on Bottom */
 .gesture-hint-bar {
+  height: var(--hint-height);
+  min-height: var(--hint-height);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 3px 0;
-  font-size: 10px;
-  font-weight: 500;
+  gap: 12px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-muted);
-  opacity: 0.7;
 }
 
 .gesture-hint-bar span {
@@ -465,13 +452,13 @@ html, body {
 .bottom-sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 100;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bottom-sheet-backdrop.is-open {
@@ -484,17 +471,17 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: 82vh;
+  max-height: 84vh;
   background: var(--bg-surface);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  border-top: 1px solid var(--border-active);
+  border-top: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   padding: 12px 16px calc(16px + var(--safe-bottom)) 16px;
   transform: translateY(100%);
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 101;
   touch-action: pan-y;
 }
@@ -561,8 +548,8 @@ html, body {
 }
 
 .year-canchi-display {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 700;
   color: var(--accent-gold);
 }
 
@@ -585,10 +572,10 @@ html, body {
 }
 
 .year-nav-btn:hover {
-  border-color: var(--border-active);
+  background: var(--border-subtle);
 }
 
-/* Scrollable Year Wheel / List */
+/* Scrollable Year Strip */
 .year-strip-container {
   overflow-x: auto;
   overflow-y: hidden;
@@ -626,15 +613,15 @@ html, body {
 }
 
 .year-chip.is-selected {
-  background: var(--primary-gradient);
+  background: var(--accent-blue);
   border-color: transparent;
   color: #ffffff;
   font-weight: 800;
-  box-shadow: 0 4px 12px var(--primary-glow);
+  box-shadow: 0 4px 10px var(--today-glow);
 }
 
 .year-chip.is-disabled {
-  opacity: 0.25;
+  opacity: 0.3;
   pointer-events: none;
 }
 
@@ -666,7 +653,7 @@ html, body {
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
   text-align: center;
   cursor: pointer;
@@ -674,7 +661,7 @@ html, body {
 }
 
 .month-select-btn:hover {
-  border-color: var(--border-active);
+  background: var(--border-subtle);
   transform: translateY(-1px);
 }
 
@@ -683,14 +670,14 @@ html, body {
 }
 
 .month-select-btn.is-active {
-  background: var(--primary-gradient);
+  background: var(--accent-blue);
   border-color: transparent;
   color: #ffffff;
-  box-shadow: 0 4px 12px var(--primary-glow);
+  box-shadow: 0 4px 10px var(--today-glow);
 }
 
 /* ==========================================================================
-   Day Detail Toast / Popup Card
+   Day Detail Toast
    ========================================================================== */
 
 .day-detail-toast {
@@ -698,13 +685,11 @@ html, body {
   left: 16px;
   right: 16px;
   bottom: calc(16px + var(--safe-bottom));
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-active);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-active);
   border-radius: 16px;
   padding: 14px 16px;
   box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   z-index: 50;
   display: flex;
   align-items: center;
@@ -712,7 +697,7 @@ html, body {
   transform: translateY(120%);
   opacity: 0;
   pointer-events: none;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .day-detail-toast.is-visible {
@@ -728,20 +713,20 @@ html, body {
 }
 
 .toast-solar-title {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 .toast-lunar-desc {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--accent-gold);
 }
 
 .toast-canchi-tag {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 11.5px;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
@@ -749,7 +734,7 @@ html, body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--bg-surface);
+  background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   cursor: pointer;
@@ -759,8 +744,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Landscape Overlay (Spec 2 - Portrait Only Requirement)
-   iOS and Desktop Landscape Blocker
+   Landscape Overlay (Portrait Only Requirement)
    ========================================================================== */
 
 .landscape-overlay {
@@ -785,7 +769,7 @@ html, body {
 .landscape-card {
   max-width: 380px;
   background: var(--bg-surface);
-  border: 1px solid var(--border-active);
+  border: 1px solid var(--border-subtle);
   border-radius: 24px;
   padding: 32px 24px;
   box-shadow: var(--shadow-lg);
@@ -826,24 +810,8 @@ html, body {
   color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   Accessibility & Focus States
-   ========================================================================== */
-
+/* Focus */
 :focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
-}
-
-/* Screen reader only utility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }

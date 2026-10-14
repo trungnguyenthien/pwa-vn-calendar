@@ -23,8 +23,7 @@
     year: currentDeviceYear,
     selectedDate: { day: currentDeviceDay, month: currentDeviceMonth, year: currentDeviceYear },
     sheetYear: currentDeviceYear,
-    isSheetOpen: false,
-    theme: localStorage.getItem('vn_calendar_theme') || 'dark'
+    isSheetOpen: false
   };
 
   // DOM Elements
@@ -35,9 +34,6 @@
   const prevMonthBtn = document.getElementById('prevMonthBtn');
   const nextMonthBtn = document.getElementById('nextMonthBtn');
   const todayBtn = document.getElementById('todayBtn');
-  const themeToggleBtn = document.getElementById('themeToggleBtn');
-  const themeIconSun = document.getElementById('themeIconSun');
-  const themeIconMoon = document.getElementById('themeIconMoon');
 
   // Bottom Sheet Elements
   const bottomSheet = document.getElementById('bottomSheet');
@@ -64,22 +60,7 @@
 
   let toastTimeout = null;
 
-  // ---------------------------------------------------------------------------
-  // Theme Management
-  // ---------------------------------------------------------------------------
-  function applyTheme(theme) {
-    state.theme = theme;
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('vn_calendar_theme', theme);
 
-    if (theme === 'light') {
-      themeIconSun.style.display = 'none';
-      themeIconMoon.style.display = 'block';
-    } else {
-      themeIconSun.style.display = 'block';
-      themeIconMoon.style.display = 'none';
-    }
-  }
 
   // ---------------------------------------------------------------------------
   // Calendar Render Helpers
@@ -339,7 +320,7 @@
     return true;
   }
 
-  function changeMonth(delta, animated = true) {
+  function changeMonth(delta, animated = true, axis = 'y') {
     if (isNavigating) return;
 
     let targetMonth = state.month + delta;
@@ -367,29 +348,52 @@
 
     isNavigating = true;
     calendarStage.classList.add('animating');
-    const exitX = delta > 0 ? -100 : 100;
-    calendarStage.style.transform = `translate3d(${exitX}%, 0, 0)`;
 
-    setTimeout(() => {
-      state.month = targetMonth;
-      state.year = targetYear;
-      renderCalendar();
-
-      // Reset to entry point without animation
-      calendarStage.classList.remove('animating');
-      const enterX = delta > 0 ? 100 : -100;
-      calendarStage.style.transform = `translate3d(${enterX}%, 0, 0)`;
-
-      // Force reflow and slide into center
-      void calendarStage.offsetWidth;
-      calendarStage.classList.add('animating');
-      calendarStage.style.transform = 'translate3d(0, 0, 0)';
+    if (axis === 'y') {
+      const exitY = delta > 0 ? -100 : 100;
+      calendarStage.style.transform = `translate3d(0, ${exitY}%, 0)`;
 
       setTimeout(() => {
+        state.month = targetMonth;
+        state.year = targetYear;
+        renderCalendar();
+
         calendarStage.classList.remove('animating');
-        isNavigating = false;
-      }, 260);
-    }, 220);
+        const enterY = delta > 0 ? 100 : -100;
+        calendarStage.style.transform = `translate3d(0, ${enterY}%, 0)`;
+
+        void calendarStage.offsetWidth;
+        calendarStage.classList.add('animating');
+        calendarStage.style.transform = 'translate3d(0, 0, 0)';
+
+        setTimeout(() => {
+          calendarStage.classList.remove('animating');
+          isNavigating = false;
+        }, 240);
+      }, 200);
+    } else {
+      const exitX = delta > 0 ? -100 : 100;
+      calendarStage.style.transform = `translate3d(${exitX}%, 0, 0)`;
+
+      setTimeout(() => {
+        state.month = targetMonth;
+        state.year = targetYear;
+        renderCalendar();
+
+        calendarStage.classList.remove('animating');
+        const enterX = delta > 0 ? 100 : -100;
+        calendarStage.style.transform = `translate3d(${enterX}%, 0, 0)`;
+
+        void calendarStage.offsetWidth;
+        calendarStage.classList.add('animating');
+        calendarStage.style.transform = 'translate3d(0, 0, 0)';
+
+        setTimeout(() => {
+          calendarStage.classList.remove('animating');
+          isNavigating = false;
+        }, 240);
+      }, 200);
+    }
   }
 
   function changeYear(delta, animated = true) {
@@ -532,19 +536,19 @@
 
     if (pointerState.axis === 'x') {
       if (dx < -threshold || vx < -velocityThreshold) {
-        changeMonth(1, true);
+        changeMonth(1, true, 'x');
       } else if (dx > threshold || vx > velocityThreshold) {
-        changeMonth(-1, true);
+        changeMonth(-1, true, 'x');
       } else {
         bounceStage();
       }
     } else if (pointerState.axis === 'y') {
-      // Swiping up (dy < 0) advances to next year
-      // Swiping down (dy > 0) goes back to prev year
+      // Swiping up (dy < 0) advances 1 month
+      // Swiping down (dy > 0) goes back 1 month
       if (dy < -threshold || vy < -velocityThreshold) {
-        changeYear(1, true);
+        changeMonth(1, true, 'y');
       } else if (dy > threshold || vy > velocityThreshold) {
-        changeYear(-1, true);
+        changeMonth(-1, true, 'y');
       } else {
         bounceStage();
       }
@@ -676,13 +680,8 @@
   sheetTodayBtn.addEventListener('click', jumpToToday);
 
   // Chevrons
-  prevMonthBtn.addEventListener('click', () => changeMonth(-1, true));
-  nextMonthBtn.addEventListener('click', () => changeMonth(1, true));
-
-  // Theme Toggle
-  themeToggleBtn.addEventListener('click', () => {
-    applyTheme(state.theme === 'dark' ? 'light' : 'dark');
-  });
+  prevMonthBtn.addEventListener('click', () => changeMonth(-1, true, 'y'));
+  nextMonthBtn.addEventListener('click', () => changeMonth(1, true, 'y'));
 
   // Keyboard navigation
   window.addEventListener('keydown', (e) => {
@@ -690,13 +689,13 @@
       if (state.isSheetOpen) closeBottomSheet();
       dayDetailToast.classList.remove('is-visible');
     } else if (e.key === 'ArrowLeft') {
-      changeMonth(-1, true);
+      changeMonth(-1, true, 'x');
     } else if (e.key === 'ArrowRight') {
-      changeMonth(1, true);
+      changeMonth(1, true, 'x');
     } else if (e.key === 'ArrowUp') {
-      changeYear(1, true);
+      changeMonth(-1, true, 'y');
     } else if (e.key === 'ArrowDown') {
-      changeYear(-1, true);
+      changeMonth(1, true, 'y');
     } else if (e.key === 't' || e.key === 'T' || e.key === 'h' || e.key === 'H') {
       jumpToToday();
     }
@@ -744,7 +743,6 @@
   // ---------------------------------------------------------------------------
   // Initialize App
   // ---------------------------------------------------------------------------
-  applyTheme(state.theme);
   populateYearStrip();
   renderCalendar();
 })();

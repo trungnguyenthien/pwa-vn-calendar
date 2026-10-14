@@ -27,9 +27,9 @@
 
 ### 3. Cử chỉ vuốt điều hướng mượt mà (Gesture Navigation)
 - Áp dụng **Pointer Events** hiện đại kèm cơ chế **Khóa trục (Axis Lock)** chống xung đột cử chỉ vuốt chéo:
-  - ⇄ **Vuốt ngang**: Chuyển tháng (trượt cửa sổ 2 tháng tịnh tiến 1 bước: 10-11 → 11-12).
-  - ⇅ **Vuốt dọc**: Chuyển năm (nhảy đúng 1 năm trước hoặc sau, giữ nguyên tháng).
-- Hiệu ứng trượt bằng CSS `transform: translate3d()` với độ trễ 200–260ms siêu mượt (60–120fps).
+  - ⇅ **Vuốt dọc**: Lên/xuống 1 tháng tịnh tiến (vuốt lên xem tháng kế tiếp, vuốt xuống xem tháng trước), giữ nguyên hiển thị trọn vẹn 2 tháng song song trên màn hình.
+  - ⇄ **Vuốt ngang**: Chuyển tháng mượt mà (trượt cửa sổ 2 tháng: 10-11 → 11-12).
+- Hiệu ứng trượt bằng CSS `transform: translate3d()` với độ trễ 200–240ms siêu mượt (60–120fps).
 
 ### 4. Bộ chọn nhanh Tháng / Năm (Bottom Sheet)
 - Bấm vào tiêu đề ở header để mở bảng trượt từ dưới lên (Bottom Sheet).
@@ -42,10 +42,10 @@
 - Khai báo `"orientation": "portrait"` trong PWA Manifest cho Android.
 - Tích hợp lớp phủ cảnh báo thông minh (`@media (orientation: landscape)`): Khi người dùng xoay ngang điện thoại (hoặc trên iOS / Desktop), màn hình hiển thị hoạt ảnh xoay máy kèm thông báo *"Vui lòng xoay dọc điện thoại để hiển thị 2 tháng trọn vẹn"*.
 
-### 6. Cài đặt PWA & Giao diện Sáng / Tối
+### 6. Cài đặt PWA & Giao diện Light thanh thoát
+- **Giao diện Light chuyên biệt**: Thiết kế thanh thoát, tối giản, các con số dương và âm có độ tương phản cao, cực kỳ rõ nét và dễ đọc.
 - Hỗ trợ đầy đủ **Web App Manifest** và **Service Worker**: Tải tài nguyên một lần, sử dụng vĩnh viễn không cần kết nối mạng.
 - Cài đặt lên màn hình chính (Add to Home Screen) trên iPhone và Android như một ứng dụng native.
-- Tích hợp chuyển đổi theme **Dark Mode** (nền tối sang trọng) và **Light Mode** (nền sáng tinh tế).
 
 ---
 
