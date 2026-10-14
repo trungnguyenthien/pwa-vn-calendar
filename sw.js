@@ -1,10 +1,13 @@
-const CACHE_NAME = 'vn-calendar-v2';
+const CACHE_NAME = 'vn-calendar-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
+  './css/style.css?v=3',
   './js/lunar.js',
+  './js/lunar.js?v=3',
   './js/app.js',
+  './js/app.js?v=3',
   './manifest.json',
   './icons/favicon.svg',
   './icons/icon-192.png',
@@ -41,7 +44,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
         // Return cached asset immediately, but fetch newer copy in background if online (stale-while-revalidate for local assets)
         fetch(event.request).then((networkResponse) => {

@@ -239,11 +239,11 @@
     const m2 = next.month;
     const y2 = next.year;
 
-    // Update Header Text: "Tháng 10 - 11 / 2026" or "Tháng 12/2026 - 1/2027"
+    // Update Header Text: "2026" (or "2026 - 2027" if spanning across year)
     if (y1 === y2) {
-      headerTitleText.textContent = `Tháng ${m1} - ${m2} / ${y1}`;
+      headerTitleText.textContent = `${y1}`;
     } else {
-      headerTitleText.textContent = `Tháng ${m1}/${y1} - ${m2}/${y2}`;
+      headerTitleText.textContent = `${y1} - ${y2}`;
     }
 
     // Render both months into the stage

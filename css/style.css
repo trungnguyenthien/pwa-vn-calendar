@@ -117,21 +117,22 @@ html, body {
   gap: 6px;
 }
 
-/* Header Center - Clickable Month/Year Picker Button */
+/* Header Center - Clickable Year Picker Button */
 .header-picker-btn {
   display: flex;
   align-items: center;
   gap: 6px;
   background: var(--bg-surface);
-  border: 1.5px solid var(--border-subtle);
-  border-radius: 9999px;
-  padding: 6px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 5px 12px;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.01em;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: var(--shadow-sm);
 }
@@ -146,8 +147,8 @@ html, body {
 }
 
 .header-picker-btn .chevron-icon {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   color: var(--text-muted);
   transition: transform 0.2s;
 }
@@ -161,9 +162,9 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
@@ -186,8 +187,8 @@ html, body {
   align-items: center;
   gap: 4px;
   height: 32px;
-  padding: 0 12px;
-  border-radius: 9999px;
+  padding: 0 10px;
+  border-radius: 6px;
   background: var(--accent-blue-bg);
   border: 1px solid rgba(37, 99, 235, 0.2);
   color: var(--accent-blue);
@@ -195,6 +196,7 @@ html, body {
   font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s;
 }
 
@@ -334,7 +336,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -365,13 +367,17 @@ html, body {
   color: var(--text-muted);
 }
 
-/* Outside Days (previous/next month fillers) */
+/* Outside Days (previous/next month fillers) - Mờ hơn rõ rệt */
 .day-cell.is-outside {
-  opacity: 0.28;
+  opacity: 0.14;
 }
 
 .day-cell.is-outside .solar-num {
-  color: var(--text-muted);
+  color: #94a3b8;
+}
+
+.day-cell.is-outside .lunar-num {
+  color: #cbd5e1;
 }
 
 /* Sunday Highlight */
@@ -473,8 +479,8 @@ html, body {
   bottom: 0;
   max-height: 84vh;
   background: var(--bg-surface);
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   border-top: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-lg);
   display: flex;
@@ -491,9 +497,9 @@ html, body {
 }
 
 .sheet-handle {
-  width: 44px;
-  height: 5px;
-  border-radius: 9999px;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
   background: var(--border-active);
   margin: 0 auto 10px auto;
   cursor: grab;
@@ -596,7 +602,7 @@ html, body {
 
 .year-chip {
   padding: 6px 14px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
@@ -648,7 +654,7 @@ html, body {
 
 .month-select-btn {
   padding: 12px 6px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
@@ -686,8 +692,8 @@ html, body {
   right: 16px;
   bottom: calc(16px + var(--safe-bottom));
   background: var(--bg-surface);
-  border: 1.5px solid var(--border-active);
-  border-radius: 16px;
+  border: 1px solid var(--border-active);
+  border-radius: 8px;
   padding: 14px 16px;
   box-shadow: var(--shadow-lg);
   z-index: 50;
@@ -733,7 +739,7 @@ html, body {
 .toast-close-btn {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 6px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
@@ -770,7 +776,7 @@ html, body {
   max-width: 380px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: 24px;
+  border-radius: 12px;
   padding: 32px 24px;
   box-shadow: var(--shadow-lg);
   display: flex;
