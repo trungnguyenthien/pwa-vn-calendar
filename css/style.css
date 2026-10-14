@@ -392,7 +392,7 @@ html, body {
 .month-meta-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 1px 4px 5px 4px;
   height: 26px;
   min-height: 26px;

@@ -27,7 +27,7 @@
 
 ### 3. Cử chỉ điều hướng & Pull-to-Refresh thông minh
 - Áp dụng **Pointer Events** hiện đại kèm cơ chế **Khóa trục (Axis Lock)** chống xung đột cử chỉ:
-  - ⇄ **Vuốt ngang**: Chuyển sang **cặp 2 tháng mới** mượt mà (ví dụ từ Tháng 10 - 11 sang Tháng 12 - 01), luôn duy trì hiển thị 2 tháng song song hoàn hảo.
+  - ⇄ **Vuốt ngang**: Chuyển cửa sổ 2 tháng tịnh tiến 1 tháng mỗi lần (ví dụ: [1, 2] → [2, 3] → [3, 4] → [10, 11] → [11, 12]), luôn duy trì hiển thị 2 tháng song song hoàn hảo.
   - ⤓ **Kéo xuống (Pull to Refresh)**: Kéo màn hình từ trên xuống để quay về ngày hôm nay tức thì, có hoạt ảnh chỉ báo trực quan và phản hồi mượt mà.
   - Khóa hoàn toàn cử chỉ vuốt dọc chuyển năm/tháng vô ý: user chỉ đổi năm khi chủ động chọn qua Bộ chọn Năm/Tháng.
 - Hiệu ứng trượt bằng CSS `transform: translate3d()` với độ trễ 200–240ms siêu mượt (60–120fps).

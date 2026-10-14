@@ -158,7 +158,6 @@
    */
   function renderMonthCardHTML(month, year, isTop) {
     const days = buildMonthDays(year, month);
-    const yearCanChi = VNLunar.getYearCanChi(year);
 
     const weekdays = [
       { text: 'T2', isSun: false, isSat: false },
@@ -226,7 +225,6 @@
             <span>Tháng ${month}</span>
             <span class="month-title-badge">${year}</span>
           </div>
-          <div class="month-lunar-tag">${yearCanChi}</div>
         </div>
         <div class="weekdays-row" aria-hidden="true">${weekdaysHTML}</div>
         <div class="days-grid">${cellsHTML}</div>
@@ -290,6 +288,8 @@
         const m = parseInt(cell.getAttribute('data-month'), 10);
         const y = parseInt(cell.getAttribute('data-year'), 10);
 
+        const isToastVisible = dayDetailToast.classList.contains('is-visible');
+
         state.selectedDate = { day: d, month: m, year: y };
 
         // Highlight selected cell
@@ -298,7 +298,13 @@
           cell.classList.add('is-selected');
         }
 
-        showDayDetail(d, m, y, cell);
+        if (isToastVisible) {
+          // Khi popup đang mở: tap vào cell khác (hoặc tap lại chính cell đó) -> tự tắt popup
+          hideDayDetail();
+        } else {
+          // Khi popup đang đóng: mở popup trong 3s
+          showDayDetail(d, m, y, cell);
+        }
       });
     });
   }
@@ -384,10 +390,10 @@
     dayDetailToast.style.opacity = '';
     dayDetailToast.classList.add('is-visible');
 
-    // Auto dismiss after 5 seconds (5s)
+    // Auto dismiss after 3 seconds (3s)
     toastTimeout = setTimeout(() => {
       hideDayDetail();
-    }, 5000);
+    }, 3000);
   }
 
   // Swipe ngang (trái sang phải hoặc phải sang trái) để tắt popup
@@ -476,18 +482,21 @@
 
   function canNavigate(targetMonth, targetYear) {
     if (targetYear < MIN_YEAR) return false;
+    if (targetYear === MIN_YEAR && targetMonth < 1) return false;
     if (targetYear > MAX_YEAR) return false;
+    if (targetYear === MAX_YEAR && targetMonth > 11) return false;
     return true;
   }
 
   /**
-   * Switches to the next (+1) or previous (-1) pair of months (advances/regresses by 2 months).
+   * Switches to the next (+1) or previous (-1) pair of months (advances/regresses by 1 month sliding window).
+   * Sequence: [1, 2] -> [2, 3] -> [3, 4] -> [4, 5]...
    */
   function changePair(direction, animated = true) {
     if (isNavigating) return;
     hideDayDetail();
 
-    const totalMonths = state.year * 12 + (state.month - 1) + direction * 2;
+    const totalMonths = state.year * 12 + (state.month - 1) + direction;
     const targetYear = Math.floor(totalMonths / 12);
     const targetMonth = (totalMonths % 12) + 1;
 
@@ -704,15 +713,17 @@
     }
 
     if (pointerState.axis === 'x') {
+      hideDayDetail();
       let dragX = dx;
       // Damping at limits
-      const isAtMin = state.year <= MIN_YEAR && state.month <= 2 && dx > 0;
+      const isAtMin = state.year <= MIN_YEAR && state.month <= 1 && dx > 0;
       const isAtMax = state.year >= MAX_YEAR && state.month >= 11 && dx < 0;
       if (isAtMin || isAtMax) {
         dragX = dx * 0.25;
       }
       calendarStage.style.transform = `translate3d(${dragX}px, 0, 0)`;
     } else if (pointerState.axis === 'y') {
+      hideDayDetail();
       if (dy > 0) {
         // Pull down for Pull-to-Refresh to today
         const pullDist = Math.min(80, Math.pow(dy, 0.82) * 1.6);
@@ -871,6 +882,7 @@
       btn.addEventListener('click', () => {
         state.month = m;
         state.year = state.sheetYear;
+        hideDayDetail();
         renderCalendar();
         closeBottomSheet();
       });
@@ -932,8 +944,8 @@
     state.month = currentDeviceMonth;
     state.year = currentDeviceYear;
     state.selectedDate = { day: currentDeviceDay, month: currentDeviceMonth, year: currentDeviceYear };
+    hideDayDetail();
     renderCalendar();
-    showDayDetail(currentDeviceDay, currentDeviceMonth, currentDeviceYear);
     if (state.isSheetOpen) closeBottomSheet();
   }
 
@@ -1014,6 +1026,12 @@
   // ---------------------------------------------------------------------------
   // Initialize App
   // ---------------------------------------------------------------------------
+  calendarStage.addEventListener('click', (e) => {
+    if (!e.target.closest('.day-cell')) {
+      hideDayDetail();
+    }
+  });
+
   populateYearStrip();
   renderCalendar();
 })();
