@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css?v=4">
+  <link rel="stylesheet" href="./css/style.css?v=8">
 </head>
 <body>
 
@@ -59,13 +59,13 @@
       </div>
 
       <div class="header-right">
-        <button type="button" class="icon-btn" id="prevMonthBtn" aria-label="Tháng trước" title="Tháng trước">
+        <button type="button" class="icon-btn" id="prevMonthBtn" aria-label="Cặp tháng trước" title="Cặp tháng trước">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
 
-        <button type="button" class="today-chip-btn" id="todayBtn" title="Về ngày hôm nay">
+        <button type="button" class="today-chip-btn is-active" id="todayBtn" title="Về ngày hôm nay">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
@@ -73,7 +73,7 @@
           <span>Hôm nay</span>
         </button>
 
-        <button type="button" class="icon-btn" id="nextMonthBtn" aria-label="Tháng sau" title="Tháng sau">
+        <button type="button" class="icon-btn" id="nextMonthBtn" aria-label="Cặp tháng sau" title="Cặp tháng sau">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
@@ -83,6 +83,21 @@
 
     <!-- Calendar Viewport (Gesture Area) -->
     <main class="calendar-viewport" id="calendarViewport" role="region" aria-label="Lịch hai tháng">
+      <!-- Pull to Refresh to Today Indicator -->
+      <div class="pull-refresh-indicator" id="pullRefreshIndicator" aria-hidden="true">
+        <div class="pull-refresh-icon-box">
+          <svg class="pull-refresh-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <polyline points="19 12 12 19 5 12"></polyline>
+          </svg>
+          <svg class="pull-refresh-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <span class="pull-refresh-text" id="pullRefreshText">Kéo xuống về Hôm nay</span>
+      </div>
+
       <div class="calendar-stage" id="calendarStage">
         <!-- Rendered dynamically by app.js: 2 month cards -->
       </div>
@@ -90,7 +105,9 @@
 
     <!-- Bottom Gesture Hint -->
     <div class="gesture-hint-bar" aria-hidden="true">
-      <span>⇅ Vuốt dọc hoặc ⇄ Vuốt ngang để chuyển tháng</span>
+      <span>⇄ Vuốt ngang đổi cặp tháng</span>
+      <span>•</span>
+      <span>⤓ Kéo xuống về Hôm nay</span>
     </div>
 
   </div>
@@ -143,10 +160,16 @@
         </div>
       </div>
 
-      <!-- Horizontal Scrollable Year Strip (Dynamic Range: CurrentYear - 80 to CurrentYear + 20) -->
-      <div class="year-strip-container" id="yearStripContainer">
-        <div class="year-strip" id="yearStrip">
-          <!-- Dynamically populated chips from minYear to maxYear -->
+      <!-- Horizontal Scrollable Year Strip (2 Lines: Top = Odd years, Bottom = Even years) -->
+      <div class="year-strip-wrapper">
+        <div class="year-strip-labels" aria-hidden="true" title="Hàng trên là năm lẻ, hàng dưới là năm chẵn">
+          <span class="year-row-badge" title="Năm lẻ">Lẻ</span>
+          <span class="year-row-badge" title="Năm chẵn">Chẵn</span>
+        </div>
+        <div class="year-strip-container" id="yearStripContainer">
+          <div class="year-strip" id="yearStrip">
+            <!-- Dynamically populated chips from minYear to maxYear (2 lines: Odd top, Even bottom) -->
+          </div>
         </div>
       </div>
     </div>
@@ -161,7 +184,7 @@
   </aside>
 
   <!-- Scripts -->
-  <script src="./js/lunar.js?v=4"></script>
-  <script src="./js/app.js?v=4"></script>
+  <script src="./js/lunar.js?v=8"></script>
+  <script src="./js/app.js?v=8"></script>
 </body>
 </html>

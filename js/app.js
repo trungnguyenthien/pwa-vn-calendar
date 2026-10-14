@@ -14,9 +14,13 @@
   const currentDeviceMonth = today.getMonth() + 1; // 1-12
   const currentDeviceDay = today.getDate();
 
-  // Range specified: 80 years before, 20 years after current year (e.g. 1946 to 2046 for 2026)
-  const MIN_YEAR = currentDeviceYear - 80;
-  const MAX_YEAR = currentDeviceYear + 20;
+  // Range: ~80 years before, ~20 years after current year.
+  // Guarantee MIN_YEAR is ODD (top line) and MAX_YEAR is EVEN (bottom line)
+  // so that every column contains (Odd year on top, Even year on bottom).
+  const rawMinYear = currentDeviceYear - 80;
+  const MIN_YEAR = rawMinYear % 2 !== 0 ? rawMinYear : rawMinYear - 1;
+  const rawMaxYear = currentDeviceYear + 20;
+  const MAX_YEAR = rawMaxYear % 2 === 0 ? rawMaxYear : rawMaxYear + 1;
 
   let state = {
     month: currentDeviceMonth,
@@ -34,6 +38,8 @@
   const prevMonthBtn = document.getElementById('prevMonthBtn');
   const nextMonthBtn = document.getElementById('nextMonthBtn');
   const todayBtn = document.getElementById('todayBtn');
+  const pullRefreshIndicator = document.getElementById('pullRefreshIndicator');
+  const pullRefreshText = document.getElementById('pullRefreshText');
 
   // Bottom Sheet Elements
   const bottomSheet = document.getElementById('bottomSheet');
@@ -239,6 +245,19 @@
     const m2 = next.month;
     const y2 = next.year;
 
+    // Check if the current pair of months contains today's device month & year
+    const hasCurrentMonth =
+      (m1 === currentDeviceMonth && y1 === currentDeviceYear) ||
+      (m2 === currentDeviceMonth && y2 === currentDeviceYear);
+
+    if (todayBtn) {
+      if (hasCurrentMonth) {
+        todayBtn.classList.add('is-active');
+      } else {
+        todayBtn.classList.remove('is-active');
+      }
+    }
+
     // Update Header: Year and Can Chi
     const headerTitleYear = document.getElementById('headerTitleYear');
     const headerTitleCanChi = document.getElementById('headerTitleCanChi');
@@ -324,6 +343,53 @@
     if (targetYear < MIN_YEAR) return false;
     if (targetYear > MAX_YEAR) return false;
     return true;
+  }
+
+  /**
+   * Switches to the next (+1) or previous (-1) pair of months (advances/regresses by 2 months).
+   */
+  function changePair(direction, animated = true) {
+    if (isNavigating) return;
+
+    const totalMonths = state.year * 12 + (state.month - 1) + direction * 2;
+    const targetYear = Math.floor(totalMonths / 12);
+    const targetMonth = (totalMonths % 12) + 1;
+
+    if (!canNavigate(targetMonth, targetYear)) {
+      bounceStage();
+      return;
+    }
+
+    if (!animated) {
+      state.month = targetMonth;
+      state.year = targetYear;
+      renderCalendar();
+      return;
+    }
+
+    isNavigating = true;
+    calendarStage.classList.add('animating');
+    const exitX = direction > 0 ? -100 : 100;
+    calendarStage.style.transform = `translate3d(${exitX}%, 0, 0)`;
+
+    setTimeout(() => {
+      state.month = targetMonth;
+      state.year = targetYear;
+      renderCalendar();
+
+      calendarStage.classList.remove('animating');
+      const enterX = direction > 0 ? 100 : -100;
+      calendarStage.style.transform = `translate3d(${enterX}%, 0, 0)`;
+
+      void calendarStage.offsetWidth;
+      calendarStage.classList.add('animating');
+      calendarStage.style.transform = 'translate3d(0, 0, 0)';
+
+      setTimeout(() => {
+        calendarStage.classList.remove('animating');
+        isNavigating = false;
+      }, 240);
+    }, 200);
   }
 
   function changeMonth(delta, animated = true, axis = 'y') {
@@ -504,20 +570,40 @@
     if (pointerState.axis === 'x') {
       let dragX = dx;
       // Damping at limits
-      if (
-        (state.year <= MIN_YEAR && state.month === 1 && dx > 0) ||
-        (state.year >= MAX_YEAR && state.month === 12 && dx < 0)
-      ) {
+      const isAtMin = state.year <= MIN_YEAR && state.month <= 2 && dx > 0;
+      const isAtMax = state.year >= MAX_YEAR && state.month >= 11 && dx < 0;
+      if (isAtMin || isAtMax) {
         dragX = dx * 0.25;
       }
       calendarStage.style.transform = `translate3d(${dragX}px, 0, 0)`;
     } else if (pointerState.axis === 'y') {
-      let dragY = dy;
-      // Damping at limits
-      if ((state.year <= MIN_YEAR && dy > 0) || (state.year >= MAX_YEAR && dy < 0)) {
-        dragY = dy * 0.25;
+      if (dy > 0) {
+        // Pull down for Pull-to-Refresh to today
+        const pullDist = Math.min(80, Math.pow(dy, 0.82) * 1.6);
+        calendarStage.style.transform = `translate3d(0, ${pullDist}px, 0)`;
+
+        if (pullRefreshIndicator) {
+          pullRefreshIndicator.classList.add('is-pulling');
+          const indicatorY = Math.min(60, -50 + pullDist * 0.9);
+          pullRefreshIndicator.style.transform = `translateX(-50%) translateY(${indicatorY}px)`;
+
+          if (pullDist >= 46) {
+            pullRefreshIndicator.classList.add('is-ready');
+            if (pullRefreshText) pullRefreshText.textContent = 'Thả ra để về Hôm nay';
+          } else {
+            pullRefreshIndicator.classList.remove('is-ready');
+            if (pullRefreshText) pullRefreshText.textContent = 'Kéo xuống về Hôm nay';
+          }
+        }
+      } else {
+        // Swiping up: do NOT change month, apply strong damping resistance
+        const pushUp = Math.max(-12, dy * 0.07);
+        calendarStage.style.transform = `translate3d(0, ${pushUp}px, 0)`;
+        if (pullRefreshIndicator) {
+          pullRefreshIndicator.classList.remove('is-pulling', 'is-ready');
+          pullRefreshIndicator.style.transform = '';
+        }
       }
-      calendarStage.style.transform = `translate3d(0, ${dragY}px, 0)`;
     }
   });
 
@@ -535,28 +621,58 @@
     const dy = e.clientY - pointerState.startY;
     const dt = Math.max(1, performance.now() - pointerState.startTime);
     const vx = dx / dt;
-    const vy = dy / dt;
 
     const threshold = 45;
     const velocityThreshold = 0.25;
 
     if (pointerState.axis === 'x') {
+      // Horizontal swipe: switch to new pair of months
       if (dx < -threshold || vx < -velocityThreshold) {
-        changeMonth(1, true, 'x');
+        changePair(1, true);
       } else if (dx > threshold || vx > velocityThreshold) {
-        changeMonth(-1, true, 'x');
+        changePair(-1, true);
       } else {
         bounceStage();
       }
     } else if (pointerState.axis === 'y') {
-      // Swiping up (dy < 0) advances 1 month
-      // Swiping down (dy > 0) goes back 1 month
-      if (dy < -threshold || vy < -velocityThreshold) {
-        changeMonth(1, true, 'y');
-      } else if (dy > threshold || vy > velocityThreshold) {
-        changeMonth(-1, true, 'y');
+      const pullDist = dy > 0 ? Math.min(80, Math.pow(dy, 0.82) * 1.6) : 0;
+      if (dy > 0 && pullDist >= 46) {
+        // Trigger pull-to-refresh to today
+        if (pullRefreshIndicator) {
+          pullRefreshIndicator.classList.remove('is-pulling', 'is-ready');
+          pullRefreshIndicator.classList.add('is-refreshing');
+          if (pullRefreshText) pullRefreshText.textContent = 'Đang về Hôm nay...';
+        }
+
+        calendarStage.classList.add('animating');
+        calendarStage.style.transform = 'translate3d(0, 42px, 0)';
+
+        jumpToToday();
+
+        setTimeout(() => {
+          calendarStage.style.transform = 'translate3d(0, 0, 0)';
+          if (pullRefreshIndicator) {
+            pullRefreshIndicator.style.transform = 'translateX(-50%) translateY(-65px)';
+          }
+          setTimeout(() => {
+            if (pullRefreshIndicator) {
+              pullRefreshIndicator.classList.remove('is-refreshing');
+              pullRefreshIndicator.style.transform = '';
+            }
+            calendarStage.classList.remove('animating');
+          }, 240);
+        }, 320);
       } else {
-        bounceStage();
+        // Cancel pull / push up bounce back
+        calendarStage.classList.add('animating');
+        calendarStage.style.transform = 'translate3d(0, 0, 0)';
+        if (pullRefreshIndicator) {
+          pullRefreshIndicator.classList.remove('is-pulling', 'is-ready');
+          pullRefreshIndicator.style.transform = '';
+        }
+        setTimeout(() => {
+          calendarStage.classList.remove('animating');
+        }, 220);
       }
     }
 
@@ -576,9 +692,11 @@
     for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = `year-chip ${y === state.sheetYear ? 'is-selected' : ''}`;
+      const isOdd = y % 2 !== 0;
+      btn.className = `year-chip ${isOdd ? 'is-odd' : 'is-even'} ${y === state.sheetYear ? 'is-selected' : ''}`;
       btn.textContent = y;
       btn.setAttribute('data-year', y);
+      btn.setAttribute('aria-label', `Năm ${y} (${VNLunar.getYearCanChi(y)})`);
       btn.addEventListener('click', () => {
         setSheetYear(y);
       });
@@ -685,9 +803,9 @@
   todayBtn.addEventListener('click', jumpToToday);
   sheetTodayBtn.addEventListener('click', jumpToToday);
 
-  // Chevrons
-  prevMonthBtn.addEventListener('click', () => changeMonth(-1, true, 'y'));
-  nextMonthBtn.addEventListener('click', () => changeMonth(1, true, 'y'));
+  // Chevrons (Switch pairs of months)
+  prevMonthBtn.addEventListener('click', () => changePair(-1, true));
+  nextMonthBtn.addEventListener('click', () => changePair(1, true));
 
   // Keyboard navigation
   window.addEventListener('keydown', (e) => {
@@ -695,13 +813,11 @@
       if (state.isSheetOpen) closeBottomSheet();
       dayDetailToast.classList.remove('is-visible');
     } else if (e.key === 'ArrowLeft') {
-      changeMonth(-1, true, 'x');
+      changePair(-1, true);
     } else if (e.key === 'ArrowRight') {
-      changeMonth(1, true, 'x');
-    } else if (e.key === 'ArrowUp') {
-      changeMonth(-1, true, 'y');
+      changePair(1, true);
     } else if (e.key === 'ArrowDown') {
-      changeMonth(1, true, 'y');
+      jumpToToday();
     } else if (e.key === 't' || e.key === 'T' || e.key === 'h' || e.key === 'H') {
       jumpToToday();
     }

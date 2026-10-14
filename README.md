@@ -25,16 +25,17 @@
     - **Mùng 1 & Rằm (15 âm)**: Đánh dấu tag màu riêng biệt (ngày lễ truyền thống).
 - **Xem chi tiết ngày**: Chạm vào ngày bất kỳ để xem bảng thông tin đầy đủ về Thứ, Ngày Dương, Ngày Âm, Can Chi của năm và Can Chi của ngày (ví dụ: *Ngày Tân Dậu, năm Bính Ngọ*).
 
-### 3. Cử chỉ vuốt điều hướng mượt mà (Gesture Navigation)
-- Áp dụng **Pointer Events** hiện đại kèm cơ chế **Khóa trục (Axis Lock)** chống xung đột cử chỉ vuốt chéo:
-  - ⇅ **Vuốt dọc**: Lên/xuống 1 tháng tịnh tiến (vuốt lên xem tháng kế tiếp, vuốt xuống xem tháng trước), giữ nguyên hiển thị trọn vẹn 2 tháng song song trên màn hình.
-  - ⇄ **Vuốt ngang**: Chuyển tháng mượt mà (trượt cửa sổ 2 tháng: 10-11 → 11-12).
+### 3. Cử chỉ điều hướng & Pull-to-Refresh thông minh
+- Áp dụng **Pointer Events** hiện đại kèm cơ chế **Khóa trục (Axis Lock)** chống xung đột cử chỉ:
+  - ⇄ **Vuốt ngang**: Chuyển sang **cặp 2 tháng mới** mượt mà (ví dụ từ Tháng 10 - 11 sang Tháng 12 - 01), luôn duy trì hiển thị 2 tháng song song hoàn hảo.
+  - ⤓ **Kéo xuống (Pull to Refresh)**: Kéo màn hình từ trên xuống để quay về ngày hôm nay tức thì, có hoạt ảnh chỉ báo trực quan và phản hồi mượt mà.
+  - Khóa hoàn toàn cử chỉ vuốt dọc chuyển năm/tháng vô ý: user chỉ đổi năm khi chủ động chọn qua Bộ chọn Năm/Tháng.
 - Hiệu ứng trượt bằng CSS `transform: translate3d()` với độ trễ 200–240ms siêu mượt (60–120fps).
 
 ### 4. Bộ chọn nhanh Tháng / Năm (Bottom Sheet)
-- Bấm vào tiêu đề ở header để mở bảng trượt từ dưới lên (Bottom Sheet).
+- Bấm vào tiêu đề năm ở header (ví dụ: `2026 \n Bính Ngọ`) để mở bảng trượt từ dưới lên (Bottom Sheet). Đây là phương thức duy nhất để đổi nhanh sang các năm khác.
 - **Phạm vi động**: Tính tự động theo năm hiện tại của thiết bị: **80 năm trước** đến **20 năm sau** (ví dụ năm 2026: từ **1946** đến **2046**). Ngoài khoảng này sẽ tự động khóa và làm mờ.
-- **Thanh cuộn năm thông minh**: Kèm nút nhảy nhanh `-10`, `-1`, `+1`, `+10` năm và hiển thị Can Chi tương ứng.
+- **Thanh cuộn năm 2 dòng siêu tốc**: Thiết kế 2 hàng song song (**Hàng trên: Năm lẻ**, **Hàng dưới: Năm chẵn**) giúp rút ngắn 50% chiều dài cuộn, duyệt 100 năm nhanh chóng; kèm nhãn cố định `Lẻ`/`Chẵn`, nút nhảy nhanh `-10`, `-1`, `+1`, `+10` năm và hiển thị Can Chi tương ứng.
 - **Lưới 12 tháng**: Chọn nhanh tháng muốn bắt đầu xem.
 - **Nút "Hôm nay"**: Quay về ngày hiện tại tức thì.
 

@@ -209,28 +209,41 @@ html, body {
 .today-chip-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   height: 32px;
   padding: 0 10px;
   border-radius: 6px;
-  background: var(--accent-blue-bg);
-  border: 1px solid rgba(37, 99, 235, 0.2);
-  color: var(--accent-blue);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
   font-family: inherit;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s;
+  transition: all 0.18s ease;
 }
 
 .today-chip-btn:hover {
-  background: var(--accent-blue);
-  color: #ffffff;
+  background: var(--border-subtle);
+  color: var(--text-primary);
 }
 
 .today-chip-btn:active {
   transform: scale(0.95);
+}
+
+/* Sáng lên khi cặp tháng có chứa tháng hiện tại */
+.today-chip-btn.is-active {
+  background: var(--accent-blue-bg);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.today-chip-btn.is-active:hover {
+  background: var(--accent-blue);
+  color: #ffffff;
 }
 
 /* ==========================================================================
@@ -244,6 +257,99 @@ html, body {
   overflow: hidden;
   touch-action: none;
   background: var(--bg-primary);
+}
+
+/* Pull to Refresh Indicator */
+.pull-refresh-indicator {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-65px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+  will-change: transform, opacity;
+}
+
+.pull-refresh-indicator.is-pulling {
+  opacity: 1;
+  transition: none; /* Immediate tracking during active drag */
+}
+
+.pull-refresh-indicator.is-ready {
+  opacity: 1;
+  background: var(--accent-blue-bg);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.pull-refresh-icon-box {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pull-refresh-arrow {
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+  transition: transform 0.22s ease, color 0.2s ease;
+}
+
+.pull-refresh-indicator.is-ready .pull-refresh-arrow {
+  transform: rotate(180deg);
+  color: var(--accent-blue);
+}
+
+.pull-refresh-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  color: var(--accent-blue);
+  animation: pullSpin 0.75s linear infinite;
+}
+
+.pull-refresh-indicator.is-refreshing .pull-refresh-arrow {
+  display: none;
+}
+
+.pull-refresh-indicator.is-refreshing .pull-refresh-spinner {
+  display: block;
+}
+
+.pull-refresh-indicator.is-refreshing {
+  opacity: 1;
+  transform: translateX(-50%) translateY(8px) !important;
+  background: var(--accent-blue-bg);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.pull-refresh-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.pull-refresh-indicator.is-ready .pull-refresh-text,
+.pull-refresh-indicator.is-refreshing .pull-refresh-text {
+  color: var(--accent-blue);
+}
+
+@keyframes pullSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Stage container that gets transformed during gestures */
@@ -360,7 +466,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
   background: transparent;
   border: none;
@@ -434,6 +540,7 @@ html, body {
 
 /* Today Cell Highlight */
 .day-cell.is-today {
+  border-radius: 12px;
   background: var(--today-bg);
   box-shadow: 0 4px 12px var(--today-glow);
 }
@@ -450,6 +557,7 @@ html, body {
 
 /* Selected Cell (Tapped) */
 .day-cell.is-selected:not(.is-today) {
+  border-radius: 12px;
   border: 1.5px solid var(--accent-blue);
   background: var(--accent-blue-bg);
 }
@@ -605,8 +713,41 @@ html, body {
   background: var(--border-subtle);
 }
 
-/* Scrollable Year Strip */
+/* Scrollable Year Strip (2 Lines: Odd on Top, Even on Bottom) */
+.year-strip-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.year-strip-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.year-row-badge {
+  height: 34px;
+  min-width: 40px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-surface-elevated);
+  border: 1px dashed var(--border-active);
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+}
+
 .year-strip-container {
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -619,13 +760,20 @@ html, body {
 }
 
 .year-strip {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-rows: repeat(2, 34px);
+  grid-auto-flow: column;
+  gap: 8px 8px;
   width: max-content;
 }
 
 .year-chip {
-  padding: 6px 14px;
+  min-width: 58px;
+  height: 34px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 6px;
   background: var(--bg-surface-elevated);
   border: 1px solid var(--border-subtle);
@@ -640,6 +788,11 @@ html, body {
 .year-chip:hover {
   color: var(--text-primary);
   border-color: var(--border-active);
+  background: #ffffff;
+}
+
+.year-chip:active {
+  transform: scale(0.96);
 }
 
 .year-chip.is-selected {
