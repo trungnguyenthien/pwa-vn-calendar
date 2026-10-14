@@ -1,14 +1,15 @@
-const CACHE_NAME = 'vn-calendar-v12';
+const CACHE_NAME = 'vn-calendar-v14';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
-  './css/style.css?v=12',
+  './css/style.css?v=14',
   './js/lunar.js',
-  './js/lunar.js?v=12',
+  './js/lunar.js?v=14',
   './js/app.js',
-  './js/app.js?v=12',
+  './js/app.js?v=14',
   './manifest.json',
+  './manifest.json?v=14',
   './icons/favicon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -72,8 +73,8 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       }).catch(() => {
-        // Offline fallback for navigation
-        if (event.request.mode === 'navigate') {
+        // Offline fallback for navigation within app scope
+        if (event.request.mode === 'navigate' && event.request.url.startsWith(self.registration.scope)) {
           return caches.match('./index.html');
         }
       });

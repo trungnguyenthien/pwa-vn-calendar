@@ -291,15 +291,35 @@
         const y = parseInt(cell.getAttribute('data-year'), 10);
 
         state.selectedDate = { day: d, month: m, year: y };
-        showDayDetail(d, m, y);
 
         // Highlight selected cell
         cells.forEach((c) => c.classList.remove('is-selected'));
         if (!cell.classList.contains('is-today')) {
           cell.classList.add('is-selected');
         }
+
+        showDayDetail(d, m, y, cell);
       });
     });
+  }
+
+  function positionToastAboveWeek(cell) {
+    if (!cell) return;
+    const cellRect = cell.getBoundingClientRect();
+    const toastHeight = dayDetailToast.offsetHeight || 66;
+    const header = document.querySelector('.calendar-header');
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 50;
+    const gap = 6;
+
+    // Display directly above the week row containing the selected day
+    let targetTop = cellRect.top - toastHeight - gap;
+
+    // If too close to the header (e.g. week 1 of top month), place right below that week row
+    if (targetTop < headerBottom + 4) {
+      targetTop = cellRect.bottom + gap;
+    }
+
+    dayDetailToast.style.top = `${Math.round(targetTop)}px`;
   }
 
   function hideDayDetail(direction = 'none') {
@@ -329,7 +349,7 @@
     }
   }
 
-  function showDayDetail(dd, mm, yy) {
+  function showDayDetail(dd, mm, yy, targetCell = null) {
     if (toastTimeout) clearTimeout(toastTimeout);
 
     const solarDate = new Date(yy, mm - 1, dd);
@@ -346,6 +366,17 @@
     toastLunarDesc.textContent = lunarStr;
 
     toastCanChiTag.textContent = `Ngày ${dayCanChi} (Âm lịch)`;
+
+    // Position toast directly above the week of the selected day
+    const cell = targetCell ||
+      calendarStage.querySelector(`.day-cell[data-day="${dd}"][data-month="${mm}"][data-year="${yy}"]:not(.is-outside)`) ||
+      calendarStage.querySelector(`.day-cell[data-day="${dd}"][data-month="${mm}"][data-year="${yy}"]`) ||
+      calendarStage.querySelector('.day-cell.is-today') ||
+      calendarStage.querySelector('.day-cell.is-selected');
+
+    if (cell) {
+      positionToastAboveWeek(cell);
+    }
 
     // Reset inline transforms and show
     dayDetailToast.classList.remove('is-dismissing-left', 'is-dismissing-right', 'is-dragging');
@@ -454,6 +485,7 @@
    */
   function changePair(direction, animated = true) {
     if (isNavigating) return;
+    hideDayDetail();
 
     const totalMonths = state.year * 12 + (state.month - 1) + direction * 2;
     const targetYear = Math.floor(totalMonths / 12);
@@ -948,6 +980,18 @@
     bottomSheet.style.transform = '';
     if (dy > 80) {
       closeBottomSheet();
+    }
+  });
+
+  // Reposition toast on window resize/orientation change if active
+  window.addEventListener('resize', () => {
+    if (dayDetailToast.classList.contains('is-visible')) {
+      const activeCell =
+        calendarStage.querySelector('.day-cell.is-selected') ||
+        calendarStage.querySelector('.day-cell.is-today');
+      if (activeCell) {
+        positionToastAboveWeek(activeCell);
+      }
     }
   });
 

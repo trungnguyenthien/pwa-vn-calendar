@@ -867,7 +867,7 @@ html, body {
 
 .day-detail-toast {
   position: fixed;
-  top: calc(10px + var(--safe-top));
+  top: 100px;
   left: 14px;
   right: 14px;
   max-width: 420px;
@@ -875,20 +875,20 @@ html, body {
   background: #fffde7;
   border: 1px solid rgba(234, 179, 8, 0.28);
   border-radius: 12px;
-  padding: 12px 18px;
-  box-shadow: 0 16px 36px -4px rgba(180, 83, 9, 0.12), 0 6px 14px -2px rgba(15, 23, 42, 0.07);
+  padding: 10px 16px;
+  box-shadow: 0 16px 36px -4px rgba(180, 83, 9, 0.16), 0 6px 14px -2px rgba(15, 23, 42, 0.08);
   z-index: 70;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  transform: translateY(-130%);
+  transform: translateY(-8px) scale(0.97);
   opacity: 0;
   pointer-events: none;
   touch-action: pan-x;
   cursor: grab;
   user-select: none;
-  will-change: transform, opacity;
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+  will-change: transform, opacity, top;
+  transition: top 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .day-detail-toast:active {
@@ -896,7 +896,7 @@ html, body {
 }
 
 .day-detail-toast.is-visible {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   opacity: 1;
   pointer-events: auto;
 }
@@ -907,13 +907,13 @@ html, body {
 }
 
 .day-detail-toast.is-dismissing-left {
-  transform: translateX(-120%) !important;
+  transform: translateX(-120%) scale(0.95) !important;
   opacity: 0 !important;
   transition: transform 0.22s ease-out, opacity 0.2s ease-out !important;
 }
 
 .day-detail-toast.is-dismissing-right {
-  transform: translateX(120%) !important;
+  transform: translateX(120%) scale(0.95) !important;
   opacity: 0 !important;
   transition: transform 0.22s ease-out, opacity 0.2s ease-out !important;
 }
