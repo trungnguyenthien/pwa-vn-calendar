@@ -1,0 +1,750 @@
+/**
+ * Lịch Việt PWA - Main Application Controller
+ * Handles 2-month viewport rendering, gesture navigation, quick picker, and offline PWA.
+ */
+
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------------------
+  // Date & State Setup
+  // ---------------------------------------------------------------------------
+  const today = new Date();
+  const currentDeviceYear = today.getFullYear();
+  const currentDeviceMonth = today.getMonth() + 1; // 1-12
+  const currentDeviceDay = today.getDate();
+
+  // Range specified: 80 years before, 20 years after current year (e.g. 1946 to 2046 for 2026)
+  const MIN_YEAR = currentDeviceYear - 80;
+  const MAX_YEAR = currentDeviceYear + 20;
+
+  let state = {
+    month: currentDeviceMonth,
+    year: currentDeviceYear,
+    selectedDate: { day: currentDeviceDay, month: currentDeviceMonth, year: currentDeviceYear },
+    sheetYear: currentDeviceYear,
+    isSheetOpen: false,
+    theme: localStorage.getItem('vn_calendar_theme') || 'dark'
+  };
+
+  // DOM Elements
+  const headerTitleText = document.getElementById('headerTitleText');
+  const headerPickerBtn = document.getElementById('headerPickerBtn');
+  const calendarViewport = document.getElementById('calendarViewport');
+  const calendarStage = document.getElementById('calendarStage');
+  const prevMonthBtn = document.getElementById('prevMonthBtn');
+  const nextMonthBtn = document.getElementById('nextMonthBtn');
+  const todayBtn = document.getElementById('todayBtn');
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const themeIconSun = document.getElementById('themeIconSun');
+  const themeIconMoon = document.getElementById('themeIconMoon');
+
+  // Bottom Sheet Elements
+  const bottomSheet = document.getElementById('bottomSheet');
+  const bottomSheetBackdrop = document.getElementById('bottomSheetBackdrop');
+  const sheetHandle = document.getElementById('sheetHandle');
+  const sheetCloseBtn = document.getElementById('sheetCloseBtn');
+  const sheetTodayBtn = document.getElementById('sheetTodayBtn');
+  const sheetYearNum = document.getElementById('sheetYearNum');
+  const sheetYearCanChi = document.getElementById('sheetYearCanChi');
+  const yearStripContainer = document.getElementById('yearStripContainer');
+  const yearStrip = document.getElementById('yearStrip');
+  const monthsGrid = document.getElementById('monthsGrid');
+  const prev10YearBtn = document.getElementById('prev10YearBtn');
+  const prevYearBtn = document.getElementById('prevYearBtn');
+  const nextYearBtn = document.getElementById('nextYearBtn');
+  const next10YearBtn = document.getElementById('next10YearBtn');
+
+  // Day Detail Toast Elements
+  const dayDetailToast = document.getElementById('dayDetailToast');
+  const toastSolarTitle = document.getElementById('toastSolarTitle');
+  const toastLunarDesc = document.getElementById('toastLunarDesc');
+  const toastCanChiTag = document.getElementById('toastCanChiTag');
+  const toastCloseBtn = document.getElementById('toastCloseBtn');
+
+  let toastTimeout = null;
+
+  // ---------------------------------------------------------------------------
+  // Theme Management
+  // ---------------------------------------------------------------------------
+  function applyTheme(theme) {
+    state.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('vn_calendar_theme', theme);
+
+    if (theme === 'light') {
+      themeIconSun.style.display = 'none';
+      themeIconMoon.style.display = 'block';
+    } else {
+      themeIconSun.style.display = 'block';
+      themeIconMoon.style.display = 'none';
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Calendar Render Helpers
+  // ---------------------------------------------------------------------------
+  function getNextMonth(m, y) {
+    if (m === 12) {
+      return { month: 1, year: y + 1 };
+    }
+    return { month: m + 1, year: y };
+  }
+
+  function getPrevMonth(m, y) {
+    if (m === 1) {
+      return { month: 12, year: y - 1 };
+    }
+    return { month: m - 1, year: y };
+  }
+
+  /**
+   * Generates grid data (42 days, 7 cols x 6 rows) for a month
+   */
+  function buildMonthDays(year, month) {
+    const days = [];
+    const firstDayDate = new Date(year, month - 1, 1);
+    const totalDaysInMonth = new Date(year, month, 0).getDate();
+
+    // Monday is column 0, Sunday is column 6
+    const jsDay = firstDayDate.getDay(); // 0 is Sunday, 1 is Monday
+    const startCol = jsDay === 0 ? 6 : jsDay - 1;
+
+    // Previous month filler days
+    const prevMonthDaysCount = new Date(year, month - 1, 0).getDate();
+    const prevMonth = month === 1 ? 12 : month - 1;
+    const prevYear = month === 1 ? year - 1 : year;
+
+    for (let i = startCol - 1; i >= 0; i--) {
+      const dayNum = prevMonthDaysCount - i;
+      const lunar = VNLunar.convertSolar2Lunar(dayNum, prevMonth, prevYear);
+      days.push({
+        solarDay: dayNum,
+        solarMonth: prevMonth,
+        solarYear: prevYear,
+        isOutside: true,
+        lunar: lunar,
+        cellData: VNLunar.formatLunarCell(lunar),
+        dayOfWeek: (startCol - 1 - i) % 7
+      });
+    }
+
+    // Current month days
+    for (let dayNum = 1; dayNum <= totalDaysInMonth; dayNum++) {
+      const lunar = VNLunar.convertSolar2Lunar(dayNum, month, year);
+      const dayOfWeek = (startCol + dayNum - 1) % 7;
+      days.push({
+        solarDay: dayNum,
+        solarMonth: month,
+        solarYear: year,
+        isOutside: false,
+        lunar: lunar,
+        cellData: VNLunar.formatLunarCell(lunar),
+        dayOfWeek: dayOfWeek
+      });
+    }
+
+    // Next month filler days (fill to 42 cells = 6 rows x 7 cols)
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    let nextDayNum = 1;
+
+    while (days.length < 42) {
+      const lunar = VNLunar.convertSolar2Lunar(nextDayNum, nextMonth, nextYear);
+      const dayOfWeek = days.length % 7;
+      days.push({
+        solarDay: nextDayNum,
+        solarMonth: nextMonth,
+        solarYear: nextYear,
+        isOutside: true,
+        lunar: lunar,
+        cellData: VNLunar.formatLunarCell(lunar),
+        dayOfWeek: dayOfWeek
+      });
+      nextDayNum++;
+    }
+
+    return days;
+  }
+
+  /**
+   * Renders a single month card HTML
+   */
+  function renderMonthCardHTML(month, year, isTop) {
+    const days = buildMonthDays(year, month);
+    const yearCanChi = VNLunar.getYearCanChi(year);
+
+    const weekdays = [
+      { text: 'T2', isSun: false, isSat: false },
+      { text: 'T3', isSun: false, isSat: false },
+      { text: 'T4', isSun: false, isSat: false },
+      { text: 'T5', isSun: false, isSat: false },
+      { text: 'T6', isSun: false, isSat: false },
+      { text: 'T7', isSun: false, isSat: true },
+      { text: 'CN', isSun: true, isSat: false }
+    ];
+
+    let weekdaysHTML = weekdays
+      .map(
+        (w) =>
+          `<div class="weekday-col ${w.isSun ? 'is-sunday' : ''} ${w.isSat ? 'is-saturday' : ''}">${w.text}</div>`
+      )
+      .join('');
+
+    let cellsHTML = days
+      .map((d) => {
+        const isSun = d.dayOfWeek === 6;
+        const isSat = d.dayOfWeek === 5;
+        const isToday =
+          !d.isOutside &&
+          d.solarDay === currentDeviceDay &&
+          d.solarMonth === currentDeviceMonth &&
+          d.solarYear === currentDeviceYear;
+
+        const isSelected =
+          state.selectedDate &&
+          d.solarDay === state.selectedDate.day &&
+          d.solarMonth === state.selectedDate.month &&
+          d.solarYear === state.selectedDate.year;
+
+        const cellClasses = [
+          'day-cell',
+          d.isOutside ? 'is-outside' : '',
+          isSun ? 'is-sunday' : '',
+          isSat ? 'is-saturday' : '',
+          isToday ? 'is-today' : '',
+          isSelected ? 'is-selected' : '',
+          d.cellData.isFirstDay ? 'is-lunar-first' : '',
+          d.cellData.isFullMoon ? 'is-lunar-full' : ''
+        ]
+          .filter(Boolean)
+          .join(' ');
+
+        return `
+          <button type="button" class="${cellClasses}"
+            data-day="${d.solarDay}"
+            data-month="${d.solarMonth}"
+            data-year="${d.solarYear}"
+            aria-label="${d.solarDay}/${d.solarMonth}/${d.solarYear}, Âm lịch ${d.cellData.fullText}">
+            <span class="solar-num">${d.solarDay}</span>
+            <span class="lunar-num">${d.cellData.text}</span>
+          </button>
+        `;
+      })
+      .join('');
+
+    return `
+      <section class="month-card ${isTop ? 'month-top' : 'month-bottom'}" aria-label="Tháng ${month} năm ${year}">
+        <div class="month-meta-bar">
+          <div class="month-title">
+            <span>Tháng ${month}</span>
+            <span class="month-title-badge">${year}</span>
+          </div>
+          <div class="month-lunar-tag">${yearCanChi}</div>
+        </div>
+        <div class="weekdays-row" aria-hidden="true">${weekdaysHTML}</div>
+        <div class="days-grid">${cellsHTML}</div>
+      </section>
+    `;
+  }
+
+  /**
+   * Main render method for the 2-month screen
+   */
+  function renderCalendar() {
+    const m1 = state.month;
+    const y1 = state.year;
+    const next = getNextMonth(m1, y1);
+    const m2 = next.month;
+    const y2 = next.year;
+
+    // Update Header Text: "Tháng 10 - 11 / 2026" or "Tháng 12/2026 - 1/2027"
+    if (y1 === y2) {
+      headerTitleText.textContent = `Tháng ${m1} - ${m2} / ${y1}`;
+    } else {
+      headerTitleText.textContent = `Tháng ${m1}/${y1} - ${m2}/${y2}`;
+    }
+
+    // Render both months into the stage
+    calendarStage.innerHTML = `
+      ${renderMonthCardHTML(m1, y1, true)}
+      ${renderMonthCardHTML(m2, y2, false)}
+    `;
+
+    attachCellClickListeners();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Day Detail Toast Handling
+  // ---------------------------------------------------------------------------
+  function attachCellClickListeners() {
+    const cells = calendarStage.querySelectorAll('.day-cell');
+    cells.forEach((cell) => {
+      cell.addEventListener('click', (e) => {
+        const d = parseInt(cell.getAttribute('data-day'), 10);
+        const m = parseInt(cell.getAttribute('data-month'), 10);
+        const y = parseInt(cell.getAttribute('data-year'), 10);
+
+        state.selectedDate = { day: d, month: m, year: y };
+        showDayDetail(d, m, y);
+
+        // Highlight selected cell
+        cells.forEach((c) => c.classList.remove('is-selected'));
+        if (!cell.classList.contains('is-today')) {
+          cell.classList.add('is-selected');
+        }
+      });
+    });
+  }
+
+  function showDayDetail(dd, mm, yy) {
+    if (toastTimeout) clearTimeout(toastTimeout);
+
+    const solarDate = new Date(yy, mm - 1, dd);
+    const dayOfWeekName = VNLunar.THU[solarDate.getDay()];
+    const lunar = VNLunar.convertSolar2Lunar(dd, mm, yy);
+    const yearCanChi = VNLunar.getYearCanChi(lunar.year);
+    const dayCanChi = VNLunar.getDayCanChi(lunar.jd);
+
+    toastSolarTitle.textContent = `${dayOfWeekName}, ngày ${dd} tháng ${mm} năm ${yy}`;
+
+    let lunarStr = `Ngày ${lunar.day} tháng ${lunar.month}${lunar.leap ? ' (nhuận)' : ''} năm ${yearCanChi}`;
+    if (lunar.day === 1) lunarStr += ' · Mùng 1 đầu tháng';
+    if (lunar.day === 15) lunarStr += ' · Ngày Rằm';
+    toastLunarDesc.textContent = lunarStr;
+
+    toastCanChiTag.textContent = `Ngày ${dayCanChi} (Âm lịch)`;
+
+    dayDetailToast.classList.add('is-visible');
+
+    // Auto dismiss after 6 seconds
+    toastTimeout = setTimeout(() => {
+      dayDetailToast.classList.remove('is-visible');
+    }, 6000);
+  }
+
+  toastCloseBtn.addEventListener('click', () => {
+    if (toastTimeout) clearTimeout(toastTimeout);
+    dayDetailToast.classList.remove('is-visible');
+  });
+
+  // ---------------------------------------------------------------------------
+  // Navigation: Month & Year transitions
+  // ---------------------------------------------------------------------------
+  let isNavigating = false;
+
+  function canNavigate(targetMonth, targetYear) {
+    if (targetYear < MIN_YEAR) return false;
+    if (targetYear > MAX_YEAR) return false;
+    return true;
+  }
+
+  function changeMonth(delta, animated = true) {
+    if (isNavigating) return;
+
+    let targetMonth = state.month + delta;
+    let targetYear = state.year;
+
+    if (targetMonth > 12) {
+      targetMonth = 1;
+      targetYear += 1;
+    } else if (targetMonth < 1) {
+      targetMonth = 12;
+      targetYear -= 1;
+    }
+
+    if (!canNavigate(targetMonth, targetYear)) {
+      bounceStage();
+      return;
+    }
+
+    if (!animated) {
+      state.month = targetMonth;
+      state.year = targetYear;
+      renderCalendar();
+      return;
+    }
+
+    isNavigating = true;
+    calendarStage.classList.add('animating');
+    const exitX = delta > 0 ? -100 : 100;
+    calendarStage.style.transform = `translate3d(${exitX}%, 0, 0)`;
+
+    setTimeout(() => {
+      state.month = targetMonth;
+      state.year = targetYear;
+      renderCalendar();
+
+      // Reset to entry point without animation
+      calendarStage.classList.remove('animating');
+      const enterX = delta > 0 ? 100 : -100;
+      calendarStage.style.transform = `translate3d(${enterX}%, 0, 0)`;
+
+      // Force reflow and slide into center
+      void calendarStage.offsetWidth;
+      calendarStage.classList.add('animating');
+      calendarStage.style.transform = 'translate3d(0, 0, 0)';
+
+      setTimeout(() => {
+        calendarStage.classList.remove('animating');
+        isNavigating = false;
+      }, 260);
+    }, 220);
+  }
+
+  function changeYear(delta, animated = true) {
+    if (isNavigating) return;
+
+    const targetYear = state.year + delta;
+    if (!canNavigate(state.month, targetYear)) {
+      bounceStage();
+      return;
+    }
+
+    if (!animated) {
+      state.year = targetYear;
+      renderCalendar();
+      return;
+    }
+
+    isNavigating = true;
+    calendarStage.classList.add('animating');
+    const exitY = delta > 0 ? -100 : 100;
+    calendarStage.style.transform = `translate3d(0, ${exitY}%, 0)`;
+
+    setTimeout(() => {
+      state.year = targetYear;
+      renderCalendar();
+
+      calendarStage.classList.remove('animating');
+      const enterY = delta > 0 ? 100 : -100;
+      calendarStage.style.transform = `translate3d(0, ${enterY}%, 0)`;
+
+      void calendarStage.offsetWidth;
+      calendarStage.classList.add('animating');
+      calendarStage.style.transform = 'translate3d(0, 0, 0)';
+
+      setTimeout(() => {
+        calendarStage.classList.remove('animating');
+        isNavigating = false;
+      }, 260);
+    }, 220);
+  }
+
+  function bounceStage() {
+    calendarStage.classList.add('animating');
+    calendarStage.style.transform = 'translate3d(0, 0, 0)';
+    setTimeout(() => {
+      calendarStage.classList.remove('animating');
+    }, 260);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Touch & Pointer Gesture Engine (Spec 4)
+  // Distance & Velocity thresholds + Axis Locking
+  // ---------------------------------------------------------------------------
+  let pointerState = {
+    isDown: false,
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    axis: null, // 'x' | 'y' | null
+    pointerId: null
+  };
+
+  calendarViewport.addEventListener('pointerdown', (e) => {
+    // Only primary button
+    if (e.button !== 0) return;
+    if (isNavigating || state.isSheetOpen) return;
+
+    pointerState.isDown = true;
+    pointerState.startX = e.clientX;
+    pointerState.startY = e.clientY;
+    pointerState.startTime = performance.now();
+    pointerState.axis = null;
+    pointerState.pointerId = e.pointerId;
+
+    calendarStage.classList.remove('animating');
+  });
+
+  calendarViewport.addEventListener('pointermove', (e) => {
+    if (!pointerState.isDown || e.pointerId !== pointerState.pointerId) return;
+
+    const dx = e.clientX - pointerState.startX;
+    const dy = e.clientY - pointerState.startY;
+
+    // Lock axis if not yet decided
+    if (pointerState.axis === null) {
+      const dist = Math.hypot(dx, dy);
+      if (dist >= 8) {
+        if (Math.abs(dx) >= Math.abs(dy)) {
+          pointerState.axis = 'x';
+          try {
+            calendarViewport.setPointerCapture(e.pointerId);
+          } catch (_) {}
+        } else {
+          pointerState.axis = 'y';
+          try {
+            calendarViewport.setPointerCapture(e.pointerId);
+          } catch (_) {}
+        }
+      }
+    }
+
+    if (pointerState.axis === 'x') {
+      let dragX = dx;
+      // Damping at limits
+      if (
+        (state.year <= MIN_YEAR && state.month === 1 && dx > 0) ||
+        (state.year >= MAX_YEAR && state.month === 12 && dx < 0)
+      ) {
+        dragX = dx * 0.25;
+      }
+      calendarStage.style.transform = `translate3d(${dragX}px, 0, 0)`;
+    } else if (pointerState.axis === 'y') {
+      let dragY = dy;
+      // Damping at limits
+      if ((state.year <= MIN_YEAR && dy > 0) || (state.year >= MAX_YEAR && dy < 0)) {
+        dragY = dy * 0.25;
+      }
+      calendarStage.style.transform = `translate3d(0, ${dragY}px, 0)`;
+    }
+  });
+
+  function endPointerGesture(e) {
+    if (!pointerState.isDown || e.pointerId !== pointerState.pointerId) return;
+    pointerState.isDown = false;
+
+    try {
+      if (calendarViewport.hasPointerCapture(e.pointerId)) {
+        calendarViewport.releasePointerCapture(e.pointerId);
+      }
+    } catch (_) {}
+
+    const dx = e.clientX - pointerState.startX;
+    const dy = e.clientY - pointerState.startY;
+    const dt = Math.max(1, performance.now() - pointerState.startTime);
+    const vx = dx / dt;
+    const vy = dy / dt;
+
+    const threshold = 45;
+    const velocityThreshold = 0.25;
+
+    if (pointerState.axis === 'x') {
+      if (dx < -threshold || vx < -velocityThreshold) {
+        changeMonth(1, true);
+      } else if (dx > threshold || vx > velocityThreshold) {
+        changeMonth(-1, true);
+      } else {
+        bounceStage();
+      }
+    } else if (pointerState.axis === 'y') {
+      // Swiping up (dy < 0) advances to next year
+      // Swiping down (dy > 0) goes back to prev year
+      if (dy < -threshold || vy < -velocityThreshold) {
+        changeYear(1, true);
+      } else if (dy > threshold || vy > velocityThreshold) {
+        changeYear(-1, true);
+      } else {
+        bounceStage();
+      }
+    }
+
+    pointerState.axis = null;
+    pointerState.pointerId = null;
+  }
+
+  calendarViewport.addEventListener('pointerup', endPointerGesture);
+  calendarViewport.addEventListener('pointercancel', endPointerGesture);
+
+  // ---------------------------------------------------------------------------
+  // Quick Month/Year Picker - Bottom Sheet (Spec 5)
+  // Dynamic Range: CurrentYear - 80 to CurrentYear + 20
+  // ---------------------------------------------------------------------------
+  function populateYearStrip() {
+    yearStrip.innerHTML = '';
+    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `year-chip ${y === state.sheetYear ? 'is-selected' : ''}`;
+      btn.textContent = y;
+      btn.setAttribute('data-year', y);
+      btn.addEventListener('click', () => {
+        setSheetYear(y);
+      });
+      yearStrip.appendChild(btn);
+    }
+  }
+
+  function setSheetYear(year) {
+    if (year < MIN_YEAR || year > MAX_YEAR) return;
+    state.sheetYear = year;
+    sheetYearNum.textContent = year;
+    sheetYearCanChi.textContent = VNLunar.getYearCanChi(year);
+
+    const chips = yearStrip.querySelectorAll('.year-chip');
+    chips.forEach((chip) => {
+      const chipYear = parseInt(chip.getAttribute('data-year'), 10);
+      if (chipYear === year) {
+        chip.classList.add('is-selected');
+        // Center the active chip into view
+        chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        chip.classList.remove('is-selected');
+      }
+    });
+  }
+
+  function populateMonthsGrid() {
+    monthsGrid.innerHTML = '';
+    for (let m = 1; m <= 12; m++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `month-select-btn ${m === state.month && state.sheetYear === state.year ? 'is-active' : ''}`;
+      btn.textContent = `Tháng ${m}`;
+      btn.setAttribute('data-month', m);
+
+      btn.addEventListener('click', () => {
+        state.month = m;
+        state.year = state.sheetYear;
+        renderCalendar();
+        closeBottomSheet();
+      });
+
+      monthsGrid.appendChild(btn);
+    }
+  }
+
+  function openBottomSheet() {
+    state.isSheetOpen = true;
+    state.sheetYear = state.year;
+    headerPickerBtn.classList.add('is-active');
+    headerPickerBtn.setAttribute('aria-expanded', 'true');
+
+    setSheetYear(state.sheetYear);
+    populateMonthsGrid();
+
+    bottomSheetBackdrop.classList.add('is-open');
+    bottomSheet.classList.add('is-open');
+
+    // Scroll active chip into view after animation
+    setTimeout(() => {
+      const activeChip = yearStrip.querySelector('.year-chip.is-selected');
+      if (activeChip) {
+        activeChip.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+      }
+    }, 100);
+  }
+
+  function closeBottomSheet() {
+    state.isSheetOpen = false;
+    headerPickerBtn.classList.remove('is-active');
+    headerPickerBtn.setAttribute('aria-expanded', 'false');
+
+    bottomSheetBackdrop.classList.remove('is-open');
+    bottomSheet.classList.remove('is-open');
+  }
+
+  // Quick navigation buttons in Bottom Sheet
+  prev10YearBtn.addEventListener('click', () => setSheetYear(Math.max(MIN_YEAR, state.sheetYear - 10)));
+  prevYearBtn.addEventListener('click', () => setSheetYear(Math.max(MIN_YEAR, state.sheetYear - 1)));
+  nextYearBtn.addEventListener('click', () => setSheetYear(Math.min(MAX_YEAR, state.sheetYear + 1)));
+  next10YearBtn.addEventListener('click', () => setSheetYear(Math.min(MAX_YEAR, state.sheetYear + 10)));
+
+  headerPickerBtn.addEventListener('click', () => {
+    if (state.isSheetOpen) {
+      closeBottomSheet();
+    } else {
+      openBottomSheet();
+    }
+  });
+
+  sheetCloseBtn.addEventListener('click', closeBottomSheet);
+  bottomSheetBackdrop.addEventListener('click', closeBottomSheet);
+
+  // Jump to today
+  function jumpToToday() {
+    state.month = currentDeviceMonth;
+    state.year = currentDeviceYear;
+    state.selectedDate = { day: currentDeviceDay, month: currentDeviceMonth, year: currentDeviceYear };
+    renderCalendar();
+    showDayDetail(currentDeviceDay, currentDeviceMonth, currentDeviceYear);
+    if (state.isSheetOpen) closeBottomSheet();
+  }
+
+  todayBtn.addEventListener('click', jumpToToday);
+  sheetTodayBtn.addEventListener('click', jumpToToday);
+
+  // Chevrons
+  prevMonthBtn.addEventListener('click', () => changeMonth(-1, true));
+  nextMonthBtn.addEventListener('click', () => changeMonth(1, true));
+
+  // Theme Toggle
+  themeToggleBtn.addEventListener('click', () => {
+    applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+  });
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (state.isSheetOpen) closeBottomSheet();
+      dayDetailToast.classList.remove('is-visible');
+    } else if (e.key === 'ArrowLeft') {
+      changeMonth(-1, true);
+    } else if (e.key === 'ArrowRight') {
+      changeMonth(1, true);
+    } else if (e.key === 'ArrowUp') {
+      changeYear(1, true);
+    } else if (e.key === 'ArrowDown') {
+      changeYear(-1, true);
+    } else if (e.key === 't' || e.key === 'T' || e.key === 'h' || e.key === 'H') {
+      jumpToToday();
+    }
+  });
+
+  // Drag down to close bottom sheet
+  let sheetDragStartY = 0;
+  sheetHandle.addEventListener('pointerdown', (e) => {
+    sheetDragStartY = e.clientY;
+    sheetHandle.setPointerCapture(e.pointerId);
+  });
+  sheetHandle.addEventListener('pointermove', (e) => {
+    if (!sheetHandle.hasPointerCapture(e.pointerId)) return;
+    const dy = e.clientY - sheetDragStartY;
+    if (dy > 0) {
+      bottomSheet.style.transform = `translateY(${dy}px)`;
+    }
+  });
+  sheetHandle.addEventListener('pointerup', (e) => {
+    if (!sheetHandle.hasPointerCapture(e.pointerId)) return;
+    sheetHandle.releasePointerCapture(e.pointerId);
+    const dy = e.clientY - sheetDragStartY;
+    bottomSheet.style.transform = '';
+    if (dy > 80) {
+      closeBottomSheet();
+    }
+  });
+
+  // ---------------------------------------------------------------------------
+  // PWA Service Worker Registration
+  // ---------------------------------------------------------------------------
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('./sw.js')
+        .then((reg) => {
+          console.log('[PWA] Service Worker registered with scope:', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('[PWA] Service Worker registration failed:', err);
+        });
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Initialize App
+  // ---------------------------------------------------------------------------
+  applyTheme(state.theme);
+  populateYearStrip();
+  renderCalendar();
+})();
