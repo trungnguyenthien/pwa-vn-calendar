@@ -99,8 +99,8 @@ html, body {
    ========================================================================== */
 
 .app-header {
-  height: var(--header-height);
-  min-height: var(--header-height);
+  height: 56px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -111,45 +111,69 @@ html, body {
   box-shadow: var(--shadow-sm);
 }
 
-.header-left, .header-right {
+.header-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  min-width: 0;
 }
 
-/* Header Center - Clickable Year Picker Button */
-.header-picker-btn {
+.header-right {
   display: flex;
   align-items: center;
+  gap: 4px;
+}
+
+/* Header Left - 2026 and Bính Ngọ in Red-Orange */
+.header-picker-btn {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 8px;
-  padding: 5px 12px;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  padding: 3px 6px;
   cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: var(--shadow-sm);
+  text-align: left;
+  transition: all 0.15s ease;
 }
 
 .header-picker-btn:hover {
-  border-color: var(--border-active);
   background: var(--bg-surface-elevated);
+  border-color: var(--border-subtle);
 }
 
 .header-picker-btn:active {
   transform: scale(0.97);
 }
 
+.header-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.header-year {
+  font-size: 21px;
+  font-weight: 900;
+  color: #0f172a; /* Màu đen / slate-900 */
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.header-canchi {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ea580c; /* Đỏ cam */
+  line-height: 1.15;
+  margin-top: 1px;
+}
+
 .header-picker-btn .chevron-icon {
   width: 14px;
   height: 14px;
-  color: var(--text-muted);
+  color: #64748b;
+  margin-top: 2px;
   transition: transform 0.2s;
 }
 

@@ -1,13 +1,13 @@
-const CACHE_NAME = 'vn-calendar-v3';
+const CACHE_NAME = 'vn-calendar-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
-  './css/style.css?v=3',
+  './css/style.css?v=4',
   './js/lunar.js',
-  './js/lunar.js?v=3',
+  './js/lunar.js?v=4',
   './js/app.js',
-  './js/app.js?v=3',
+  './js/app.js?v=4',
   './manifest.json',
   './icons/favicon.svg',
   './icons/icon-192.png',
@@ -42,6 +42,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
+
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin === self.location.origin && !event.request.url.startsWith(self.registration.scope)) {
+    return; // Pass through requests outside app scope
+  }
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {

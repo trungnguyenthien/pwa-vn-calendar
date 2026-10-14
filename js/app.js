@@ -239,11 +239,17 @@
     const m2 = next.month;
     const y2 = next.year;
 
-    // Update Header Text: "2026" (or "2026 - 2027" if spanning across year)
-    if (y1 === y2) {
-      headerTitleText.textContent = `${y1}`;
-    } else {
-      headerTitleText.textContent = `${y1} - ${y2}`;
+    // Update Header: Year and Can Chi
+    const headerTitleYear = document.getElementById('headerTitleYear');
+    const headerTitleCanChi = document.getElementById('headerTitleCanChi');
+    if (headerTitleYear && headerTitleCanChi) {
+      if (y1 === y2) {
+        headerTitleYear.textContent = `${y1}`;
+        headerTitleCanChi.textContent = VNLunar.getYearCanChi(y1);
+      } else {
+        headerTitleYear.textContent = `${y1} - ${y2}`;
+        headerTitleCanChi.textContent = `${VNLunar.getYearCanChi(y1)} - ${VNLunar.getYearCanChi(y2)}`;
+      }
     }
 
     // Render both months into the stage
@@ -730,7 +736,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('./sw.js')
+        .register('./sw.js', { scope: './' })
         .then((reg) => {
           console.log('[PWA] Service Worker registered with scope:', reg.scope);
         })
