@@ -233,16 +233,18 @@ html, body {
   transform: scale(0.95);
 }
 
-/* Sáng lên khi cặp tháng có chứa tháng hiện tại */
+/* Trạng thái select: Background xanh đậm khi cặp tháng có chứa tháng hiện tại */
 .today-chip-btn.is-active {
-  background: var(--accent-blue-bg);
-  border: 1px solid rgba(37, 99, 235, 0.25);
-  color: var(--accent-blue);
+  background: var(--accent-blue);
+  border: 1px solid var(--accent-blue);
+  color: #ffffff;
   font-weight: 700;
+  box-shadow: 0 2px 8px var(--today-glow);
 }
 
 .today-chip-btn.is-active:hover {
-  background: var(--accent-blue);
+  background: #1d4ed8;
+  border-color: #1d4ed8;
   color: #ffffff;
 }
 
@@ -471,7 +473,7 @@ html, body {
   background: transparent;
   border: none;
   transition: background-color 0.12s, transform 0.1s;
-  padding: 1px 2px;
+  padding: 3.5px 2px;
   text-decoration: none;
 }
 
@@ -483,7 +485,7 @@ html, body {
 .solar-num {
   font-size: clamp(15px, 2.7vh, 21px);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.05;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -493,7 +495,7 @@ html, body {
   font-size: clamp(9.5px, 1.45vh, 12px);
   font-weight: 600;
   line-height: 1;
-  margin-top: 2px;
+  margin-top: 1.5px; /* Giảm còn 75% (từ 2px còn 1.5px) */
   color: var(--text-muted);
 }
 
