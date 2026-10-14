@@ -62,7 +62,6 @@
   const toastSolarTitle = document.getElementById('toastSolarTitle');
   const toastLunarDesc = document.getElementById('toastLunarDesc');
   const toastCanChiTag = document.getElementById('toastCanChiTag');
-  const toastCloseBtn = document.getElementById('toastCloseBtn');
 
   let toastTimeout = null;
 
@@ -303,6 +302,33 @@
     });
   }
 
+  function hideDayDetail(direction = 'none') {
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+      toastTimeout = null;
+    }
+
+    if (direction === 'left') {
+      dayDetailToast.classList.add('is-dismissing-left');
+      setTimeout(() => {
+        dayDetailToast.classList.remove('is-visible', 'is-dismissing-left', 'is-dragging');
+        dayDetailToast.style.transform = '';
+        dayDetailToast.style.opacity = '';
+      }, 220);
+    } else if (direction === 'right') {
+      dayDetailToast.classList.add('is-dismissing-right');
+      setTimeout(() => {
+        dayDetailToast.classList.remove('is-visible', 'is-dismissing-right', 'is-dragging');
+        dayDetailToast.style.transform = '';
+        dayDetailToast.style.opacity = '';
+      }, 220);
+    } else {
+      dayDetailToast.classList.remove('is-visible', 'is-dragging');
+      dayDetailToast.style.transform = '';
+      dayDetailToast.style.opacity = '';
+    }
+  }
+
   function showDayDetail(dd, mm, yy) {
     if (toastTimeout) clearTimeout(toastTimeout);
 
@@ -321,18 +347,96 @@
 
     toastCanChiTag.textContent = `Ngày ${dayCanChi} (Âm lịch)`;
 
+    // Reset inline transforms and show
+    dayDetailToast.classList.remove('is-dismissing-left', 'is-dismissing-right', 'is-dragging');
+    dayDetailToast.style.transform = '';
+    dayDetailToast.style.opacity = '';
     dayDetailToast.classList.add('is-visible');
 
-    // Auto dismiss after 6 seconds
+    // Auto dismiss after 5 seconds (5s)
     toastTimeout = setTimeout(() => {
-      dayDetailToast.classList.remove('is-visible');
-    }, 6000);
+      hideDayDetail();
+    }, 5000);
   }
 
-  toastCloseBtn.addEventListener('click', () => {
-    if (toastTimeout) clearTimeout(toastTimeout);
-    dayDetailToast.classList.remove('is-visible');
+  // Swipe ngang (trái sang phải hoặc phải sang trái) để tắt popup
+  let toastSwipe = {
+    isDown: false,
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    pointerId: null
+  };
+
+  dayDetailToast.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    toastSwipe.isDown = true;
+    toastSwipe.startX = e.clientX;
+    toastSwipe.startY = e.clientY;
+    toastSwipe.startTime = performance.now();
+    toastSwipe.pointerId = e.pointerId;
+    dayDetailToast.classList.add('is-dragging');
+
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+      toastTimeout = null;
+    }
+
+    try {
+      dayDetailToast.setPointerCapture(e.pointerId);
+    } catch (_) {}
   });
+
+  dayDetailToast.addEventListener('pointermove', (e) => {
+    if (!toastSwipe.isDown || e.pointerId !== toastSwipe.pointerId) return;
+    const dx = e.clientX - toastSwipe.startX;
+
+    // Follow horizontal drag
+    dayDetailToast.style.transform = `translateX(${dx}px)`;
+
+    // Subtle fade out when dragged further away
+    const progress = Math.min(1, Math.abs(dx) / 180);
+    dayDetailToast.style.opacity = `${1 - progress * 0.55}`;
+  });
+
+  function endToastSwipe(e) {
+    if (!toastSwipe.isDown || e.pointerId !== toastSwipe.pointerId) return;
+    toastSwipe.isDown = false;
+    dayDetailToast.classList.remove('is-dragging');
+
+    try {
+      if (dayDetailToast.hasPointerCapture(e.pointerId)) {
+        dayDetailToast.releasePointerCapture(e.pointerId);
+      }
+    } catch (_) {}
+
+    const dx = e.clientX - toastSwipe.startX;
+    const dt = Math.max(1, performance.now() - toastSwipe.startTime);
+    const vx = dx / dt;
+
+    const threshold = 40;
+    const velocityThreshold = 0.25;
+
+    if (dx < -threshold || vx < -velocityThreshold) {
+      // Swiped left to dismiss
+      hideDayDetail('left');
+    } else if (dx > threshold || vx > velocityThreshold) {
+      // Swiped right to dismiss
+      hideDayDetail('right');
+    } else {
+      // Return to center position and resume 5s timeout
+      dayDetailToast.style.transform = '';
+      dayDetailToast.style.opacity = '';
+      toastTimeout = setTimeout(() => {
+        hideDayDetail();
+      }, 5000);
+    }
+
+    toastSwipe.pointerId = null;
+  }
+
+  dayDetailToast.addEventListener('pointerup', endToastSwipe);
+  dayDetailToast.addEventListener('pointercancel', endToastSwipe);
 
   // ---------------------------------------------------------------------------
   // Navigation: Month & Year transitions
@@ -744,6 +848,7 @@
   }
 
   function openBottomSheet() {
+    hideDayDetail();
     state.isSheetOpen = true;
     state.sheetYear = state.year;
     headerPickerBtn.classList.add('is-active');
@@ -811,7 +916,7 @@
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (state.isSheetOpen) closeBottomSheet();
-      dayDetailToast.classList.remove('is-visible');
+      hideDayDetail();
     } else if (e.key === 'ArrowLeft') {
       changePair(-1, true);
     } else if (e.key === 'ArrowRight') {

@@ -23,7 +23,7 @@
     - **Chủ nhật**: Đỏ cam (`#f43f5e`).
     - **Hôm nay**: Hiệu ứng gradient xanh dạ quang nổi bật.
     - **Mùng 1 & Rằm (15 âm)**: Đánh dấu tag màu riêng biệt (ngày lễ truyền thống).
-- **Xem chi tiết ngày**: Chạm vào ngày bất kỳ để xem bảng thông tin đầy đủ về Thứ, Ngày Dương, Ngày Âm, Can Chi của năm và Can Chi của ngày (ví dụ: *Ngày Tân Dậu, năm Bính Ngọ*).
+- **Xem chi tiết ngày**: Chạm vào ngày bất kỳ để hiển thị banner thông tin nổi bật ở phía trên (Top) kèm shadow sang trọng (Thứ, Ngày Dương, Ngày Âm, Can Chi của năm và Can Chi của ngày). Hỗ trợ vuốt ngang (trái sang phải hoặc phải sang trái) để đóng tức thì, hoặc tự động ẩn sau 5 giây.
 
 ### 3. Cử chỉ điều hướng & Pull-to-Refresh thông minh
 - Áp dụng **Pointer Events** hiện đại kèm cơ chế **Khóa trục (Axis Lock)** chống xung đột cử chỉ:

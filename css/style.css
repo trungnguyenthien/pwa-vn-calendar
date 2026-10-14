@@ -862,27 +862,37 @@ html, body {
 }
 
 /* ==========================================================================
-   Day Detail Toast
+   Day Detail Toast (Top Banner with Swipe Dismiss & Elevated Shadow)
    ========================================================================== */
 
 .day-detail-toast {
   position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: calc(16px + var(--safe-bottom));
+  top: calc(10px + var(--safe-top));
+  left: 14px;
+  right: 14px;
+  max-width: 420px;
+  margin: 0 auto;
   background: var(--bg-surface);
-  border: 1px solid var(--border-active);
-  border-radius: 8px;
-  padding: 14px 16px;
-  box-shadow: var(--shadow-lg);
-  z-index: 50;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 18px;
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.16), 0 6px 14px -2px rgba(15, 23, 42, 0.08);
+  z-index: 70;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  transform: translateY(120%);
+  justify-content: flex-start;
+  transform: translateY(-130%);
   opacity: 0;
   pointer-events: none;
-  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: pan-x;
+  cursor: grab;
+  user-select: none;
+  will-change: transform, opacity;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+}
+
+.day-detail-toast:active {
+  cursor: grabbing;
 }
 
 .day-detail-toast.is-visible {
@@ -891,10 +901,28 @@ html, body {
   pointer-events: auto;
 }
 
+.day-detail-toast.is-dragging {
+  cursor: grabbing;
+  transition: none !important;
+}
+
+.day-detail-toast.is-dismissing-left {
+  transform: translateX(-120%) !important;
+  opacity: 0 !important;
+  transition: transform 0.22s ease-out, opacity 0.2s ease-out !important;
+}
+
+.day-detail-toast.is-dismissing-right {
+  transform: translateX(120%) !important;
+  opacity: 0 !important;
+  transition: transform 0.22s ease-out, opacity 0.2s ease-out !important;
+}
+
 .toast-content {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2.5px;
+  width: 100%;
 }
 
 .toast-solar-title {
@@ -913,19 +941,6 @@ html, body {
   font-size: 11.5px;
   font-weight: 600;
   color: var(--text-muted);
-}
-
-.toast-close-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* ==========================================================================
