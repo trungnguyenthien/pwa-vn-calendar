@@ -1,13 +1,13 @@
-const CACHE_NAME = 'vn-calendar-v11';
+const CACHE_NAME = 'vn-calendar-v12';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
-  './css/style.css?v=11',
+  './css/style.css?v=12',
   './js/lunar.js',
-  './js/lunar.js?v=11',
+  './js/lunar.js?v=12',
   './js/app.js',
-  './js/app.js?v=11',
+  './js/app.js?v=12',
   './manifest.json',
   './icons/favicon.svg',
   './icons/icon-192.png',
