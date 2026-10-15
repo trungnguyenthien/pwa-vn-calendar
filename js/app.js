@@ -31,7 +31,6 @@
   };
 
   // DOM Elements
-  const headerTitleText = document.getElementById('headerTitleText');
   const headerPickerBtn = document.getElementById('headerPickerBtn');
   const calendarViewport = document.getElementById('calendarViewport');
   const calendarStage = document.getElementById('calendarStage');
@@ -158,6 +157,8 @@
    */
   function renderMonthCardHTML(month, year, isTop) {
     const days = buildMonthDays(year, month);
+    const yearCanChi = VNLunar.getYearCanChi(year);
+    const isEvenYear = year % 2 === 0;
 
     const weekdays = [
       { text: 'T2', isSun: false, isSat: false },
@@ -223,7 +224,7 @@
         <div class="month-meta-bar">
           <div class="month-title">
             <span>Tháng ${month}</span>
-            <span class="month-title-badge">${year}</span>
+            <span class="month-title-badge ${isEvenYear ? 'is-even' : 'is-odd'}">${year} - ${yearCanChi.toUpperCase()}</span>
           </div>
         </div>
         <div class="weekdays-row" aria-hidden="true">${weekdaysHTML}</div>
@@ -252,19 +253,6 @@
         todayBtn.classList.add('is-active');
       } else {
         todayBtn.classList.remove('is-active');
-      }
-    }
-
-    // Update Header: Year and Can Chi
-    const headerTitleYear = document.getElementById('headerTitleYear');
-    const headerTitleCanChi = document.getElementById('headerTitleCanChi');
-    if (headerTitleYear && headerTitleCanChi) {
-      if (y1 === y2) {
-        headerTitleYear.textContent = `${y1}`;
-        headerTitleCanChi.textContent = VNLunar.getYearCanChi(y1);
-      } else {
-        headerTitleYear.textContent = `${y1} - ${y2}`;
-        headerTitleCanChi.textContent = `${VNLunar.getYearCanChi(y1)} - ${VNLunar.getYearCanChi(y2)}`;
       }
     }
 

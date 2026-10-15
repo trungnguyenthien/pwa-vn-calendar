@@ -12,17 +12,17 @@
   <title>Lịch Việt - Lịch Âm Dương Song Song</title>
 
   <!-- PWA Manifest & Icons -->
-  <link rel="manifest" href="./manifest.json?v=18">
+  <link rel="manifest" href="./manifest.json?v=21">
   <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
   <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css?v=18">
+  <link rel="stylesheet" href="./css/style.css?v=21">
 </head>
 <body>
 
@@ -46,12 +46,9 @@
     <!-- Top Header Bar -->
     <header class="app-header" id="appHeader">
       <div class="header-left">
-        <!-- Year & Can Chi - Aligned to Left -->
-        <button type="button" class="header-picker-btn" id="headerPickerBtn" aria-label="Chọn nhanh năm" aria-expanded="false" aria-controls="bottomSheet">
-          <div class="header-title-group">
-            <span class="header-year" id="headerTitleYear">2026</span>
-            <span class="header-canchi" id="headerTitleCanChi">Bính Ngọ</span>
-          </div>
+        <!-- Nút Chọn Năm -->
+        <button type="button" class="header-picker-btn" id="headerPickerBtn" aria-label="Chọn năm" aria-expanded="false" aria-controls="bottomSheet">
+          <span class="header-picker-text">CHỌN NĂM</span>
           <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
@@ -156,10 +153,6 @@
 
       <!-- Horizontal Scrollable Year Strip (2 Lines: Top = Odd years, Bottom = Even years) -->
       <div class="year-strip-wrapper">
-        <div class="year-strip-labels" aria-hidden="true" title="Hàng trên là năm lẻ, hàng dưới là năm chẵn">
-          <span class="year-row-badge" title="Năm lẻ">Lẻ</span>
-          <span class="year-row-badge" title="Năm chẵn">Chẵn</span>
-        </div>
         <div class="year-strip-container" id="yearStripContainer">
           <div class="year-strip" id="yearStrip">
             <!-- Dynamically populated chips from minYear to maxYear (2 lines: Odd top, Even bottom) -->
@@ -178,7 +171,7 @@
   </aside>
 
   <!-- Scripts -->
-  <script src="./js/lunar.js?v=18"></script>
-  <script src="./js/app.js?v=18"></script>
+  <script src="./js/lunar.js?v=21"></script>
+  <script src="./js/app.js?v=21"></script>
 </body>
 </html>

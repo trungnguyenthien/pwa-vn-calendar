@@ -123,62 +123,58 @@ html, body {
   gap: 4px;
 }
 
-/* Header Left - 2026 and Bính Ngọ in Red-Orange */
+/* Header Left - Nút Chọn Năm */
 .header-picker-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 3px 6px;
+  height: 32px;
+  padding: 0 10px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
+  font-family: inherit;
 }
 
 .header-picker-btn:hover {
-  background: var(--bg-surface-elevated);
-  border-color: var(--border-subtle);
+  background: var(--border-subtle);
+  border-color: var(--border-active);
 }
 
 .header-picker-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
-.header-title-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1;
+.header-picker-btn.is-active {
+  background: var(--accent-blue-bg);
+  border-color: var(--accent-blue);
 }
 
-.header-year {
-  font-size: 21px;
-  font-weight: 900;
-  color: #0f172a; /* Màu đen / slate-900 */
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+.header-picker-btn.is-active .header-picker-text {
+  color: var(--accent-blue);
 }
 
-.header-canchi {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #ea580c; /* Đỏ cam */
-  line-height: 1.15;
-  margin-top: 1px;
+.header-picker-btn.is-active .chevron-icon {
+  color: var(--accent-blue);
+  transform: rotate(180deg);
+}
+
+.header-picker-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .header-picker-btn .chevron-icon {
   width: 14px;
   height: 14px;
-  color: #64748b;
-  margin-top: 2px;
-  transition: transform 0.2s;
-}
-
-.header-picker-btn.is-active .chevron-icon {
-  transform: rotate(180deg);
+  color: var(--text-muted);
+  transition: transform 0.2s ease, color 0.18s ease;
 }
 
 /* Header Action Buttons */
@@ -379,7 +375,7 @@ html, body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 6px 10px;
+  padding: 4px 10px 8px;
   position: relative;
   background: var(--bg-surface);
 }
@@ -393,13 +389,13 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 1px 4px 5px 4px;
+  padding: 0 4px 4px 4px;
   height: 26px;
   min-height: 26px;
 }
 
 .month-title {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: 0.02em;
@@ -409,37 +405,49 @@ html, body {
 }
 
 .month-title-badge {
-  display: inline-block;
-  padding: 1px 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
   border-radius: 6px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--accent-blue);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-.month-lunar-tag {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--accent-gold);
+/* Năm chẵn: Chip xanh dương nổi bật */
+.month-title-badge.is-even {
+  background: #2563eb;
+  border: 1px solid #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+/* Năm lẻ: Chip xanh lá nổi bật */
+.month-title-badge.is-odd {
+  background: #16a34a;
+  border: 1px solid #15803d;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
 }
 
 /* Day of Week Row */
 .weekdays-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  height: 22px;
-  min-height: 22px;
+  height: 20px;
+  min-height: 20px;
   text-align: center;
   align-items: center;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.02em;
   border-bottom: 1px solid var(--border-subtle);
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .weekday-col.is-sunday {
@@ -456,9 +464,9 @@ html, body {
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, minmax(0, 1fr));
   gap: 2px;
-  padding: 1px 0;
+  padding: 2px 0 4px;
 }
 
 /* Day Cell */
@@ -468,12 +476,13 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   background: transparent;
   border: none;
   transition: background-color 0.12s, transform 0.1s;
-  padding: 3.5px 2px;
+  padding: 2px 1px;
+  min-height: 0;
   text-decoration: none;
 }
 
@@ -481,21 +490,21 @@ html, body {
   transform: scale(0.92);
 }
 
-/* Solar Date Number - Big, Bold, Clean & Crisp */
+/* Solar Date Number - Big, Bold, Clean & Crisp (~5% reduced) */
 .solar-num {
-  font-size: clamp(15px, 2.7vh, 21px);
+  font-size: clamp(14px, 2.5vh, 20px);
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
-/* Lunar Date Number - Distinct & Readable */
+/* Lunar Date Number - Distinct & Readable (~5% reduced) */
 .lunar-num {
-  font-size: clamp(9.5px, 1.45vh, 12px);
+  font-size: clamp(9px, 1.35vh, 11px);
   font-weight: 600;
   line-height: 1;
-  margin-top: 1.5px; /* Giảm còn 75% (từ 2px còn 1.5px) */
+  margin-top: 1px;
   color: var(--text-muted);
 }
 
@@ -527,8 +536,8 @@ html, body {
   color: var(--accent-red);
   font-weight: 800;
   background: var(--accent-red-bg);
-  padding: 1px 5px;
-  border-radius: 4px;
+  padding: 0.5px 4px;
+  border-radius: 3px;
 }
 
 /* Rằm (15 Âm - Full Moon) */
@@ -536,8 +545,8 @@ html, body {
   color: var(--accent-gold);
   font-weight: 800;
   background: var(--accent-gold-bg);
-  padding: 1px 5px;
-  border-radius: 4px;
+  padding: 0.5px 4px;
+  border-radius: 3px;
 }
 
 /* Today Cell Highlight */
@@ -719,37 +728,11 @@ html, body {
 .year-strip-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
   width: 100%;
 }
 
-.year-strip-labels {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.year-row-badge {
-  height: 34px;
-  min-width: 40px;
-  padding: 0 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--text-muted);
-  background: var(--bg-surface-elevated);
-  border: 1px dashed var(--border-active);
-  border-radius: 6px;
-  letter-spacing: 0.02em;
-}
-
 .year-strip-container {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
