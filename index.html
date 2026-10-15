@@ -12,7 +12,7 @@
   <title>Lịch Việt - Lịch Âm Dương Song Song</title>
 
   <!-- PWA Manifest & Icons -->
-  <link rel="manifest" href="./manifest.json?v=28">
+  <link rel="manifest" href="./manifest.json?v=33">
   <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css?v=28">
+  <link rel="stylesheet" href="./css/style.css?v=33">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
         <div class="weekday-col is-saturday">T7</div>
         <div class="weekday-col is-sunday">CN</div>
       </div>
-      <div class="weekday-month-spacer">Tháng</div>
+      <div class="weekday-month-spacer" aria-hidden="true"></div>
     </div>
 
     <!-- Calendar Viewport (Continuous Vertical Flow) -->
@@ -106,7 +106,10 @@
     <div class="toast-content">
       <div class="toast-solar-title" id="toastSolarTitle">Thứ Tư, 14 tháng 10 năm 2026</div>
       <div class="toast-lunar-desc" id="toastLunarDesc">Mùng 5 tháng 9 năm Bính Ngọ</div>
-      <div class="toast-canchi-tag" id="toastCanChiTag">Ngày Tân Dậu · Giờ Hoàng Đạo</div>
+      <div class="toast-meta-row">
+        <span class="toast-canchi-tag" id="toastCanChiTag">Ngày Tân Dậu (Âm lịch)</span>
+        <span class="toast-zodiac-tag" id="toastZodiacTag">♎ Cung Thiên Bình</span>
+      </div>
     </div>
   </div>
 
@@ -157,7 +160,7 @@
   </aside>
 
   <!-- Scripts -->
-  <script src="./js/lunar.js?v=28"></script>
-  <script src="./js/app.js?v=28"></script>
+  <script src="./js/lunar.js?v=33"></script>
+  <script src="./js/app.js?v=33"></script>
 </body>
 </html>

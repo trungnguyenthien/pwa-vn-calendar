@@ -254,10 +254,34 @@
     };
   }
 
+  /**
+   * Determine Western Zodiac Sign (Cung Hoàng Đạo) from Solar day and month
+   */
+  function getZodiacSign(day, month) {
+    const d = Number(day);
+    const m = Number(month);
+
+    if ((m === 3 && d >= 21) || (m === 4 && d <= 19)) return { name: 'Bạch Dương', symbol: '♈', eng: 'Aries' };
+    if ((m === 4 && d >= 20) || (m === 5 && d <= 20)) return { name: 'Kim Ngưu', symbol: '♉', eng: 'Taurus' };
+    if ((m === 5 && d >= 21) || (m === 6 && d <= 21)) return { name: 'Song Tử', symbol: '♊', eng: 'Gemini' };
+    if ((m === 6 && d >= 22) || (m === 7 && d <= 22)) return { name: 'Cự Giải', symbol: '♋', eng: 'Cancer' };
+    if ((m === 7 && d >= 23) || (m === 8 && d <= 22)) return { name: 'Sư Tử', symbol: '♌', eng: 'Leo' };
+    if ((m === 8 && d >= 23) || (m === 9 && d <= 22)) return { name: 'Xử Nữ', symbol: '♍', eng: 'Virgo' };
+    if ((m === 9 && d >= 23) || (m === 10 && d <= 23)) return { name: 'Thiên Bình', symbol: '♎', eng: 'Libra' };
+    if ((m === 10 && d >= 24) || (m === 11 && d <= 22)) return { name: 'Bọ Cạp', symbol: '♏', eng: 'Scorpio' };
+    if ((m === 11 && d >= 23) || (m === 12 && d <= 21)) return { name: 'Nhân Mã', symbol: '♐', eng: 'Sagittarius' };
+    if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) return { name: 'Ma Kết', symbol: '♑', eng: 'Capricorn' };
+    if ((m === 1 && d >= 20) || (m === 2 && d <= 18)) return { name: 'Bảo Bình', symbol: '♒', eng: 'Aquarius' };
+    if ((m === 2 && d >= 19) || (m === 3 && d <= 20)) return { name: 'Song Ngư', symbol: '♓', eng: 'Pisces' };
+
+    return { name: '', symbol: '', eng: '' };
+  }
+
   return {
     convertSolar2Lunar,
     getYearCanChi,
     getDayCanChi,
+    getZodiacSign,
     formatLunarCell,
     jdFromDate,
     CAN,

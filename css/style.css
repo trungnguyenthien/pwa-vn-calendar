@@ -285,18 +285,10 @@ html, body {
 }
 
 .weekday-month-spacer {
-  flex: 0 0 clamp(36px, 9vw, 44px);
-  width: clamp(36px, 9vw, 44px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--text-muted);
+  flex: 0 0 clamp(38px, 9.5vw, 46px);
+  width: clamp(38px, 9.5vw, 46px);
   border-left: 1px solid var(--border-subtle);
   background: var(--bg-surface-elevated);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
@@ -330,7 +322,7 @@ html, body {
   display: flex;
   width: 100%;
   position: relative;
-  border-bottom: 1.5px solid var(--border-subtle);
+  border-bottom: none;
 }
 
 .month-days-container {
@@ -341,11 +333,12 @@ html, body {
 }
 
 .month-rail {
-  flex: 0 0 clamp(36px, 9vw, 44px);
-  width: clamp(36px, 9vw, 44px);
+  flex: 0 0 clamp(38px, 9.5vw, 46px);
+  width: clamp(38px, 9.5vw, 46px);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   border-left: 1px solid rgba(0, 0, 0, 0.12);
   position: relative;
   user-select: none;
@@ -358,27 +351,55 @@ html, body {
   filter: brightness(0.92);
 }
 
-.month-rail-text {
+/* Ô số tháng nằm ngang ở hàng đầu tiên */
+.month-rail-badge {
+  height: calc(100% / var(--weeks-count, 5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.22);
+  box-sizing: border-box;
+  padding: 0 2px;
+}
+
+.month-rail-num {
+  font-family: inherit;
+  font-size: clamp(20px, 5.2vw, 26px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-align: center;
+}
+
+/* Phần thân bên dưới chứa số năm xoay dọc */
+.month-rail-body {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding-top: 14px;
+}
+
+.month-rail-year {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   white-space: nowrap;
   font-family: inherit;
-  font-size: clamp(11px, 2.7vw, 13px);
+  font-size: clamp(12.5px, 3.2vw, 15px);
   font-weight: 800;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  padding: 10px 0;
+  letter-spacing: 1.5px;
 }
 
 /* ==========================================================================
    Two Alternating Background Themes: Vàng Nhạt & Tím Khoai Môn Nhạt
    ========================================================================== */
 
-/* Theme Vàng Nhạt (Soft Yellow / Amber) */
+/* Theme Vàng Nhạt (Soft Pastel Yellow / Cream) - Nhạt dịu tinh tế */
 .day-cell.theme-yellow-cell {
-  background-color: #fef9c3; /* Vàng nhạt tươi sáng */
-  border-right: 0.5px solid rgba(234, 179, 8, 0.28);
-  border-bottom: 0.5px solid rgba(234, 179, 8, 0.28);
+  background-color: #fefce8; /* Yellow-50: Vàng kem pastel siêu nhạt */
+  border-right: 0.5px solid rgba(234, 179, 8, 0.16);
+  border-bottom: 0.5px solid rgba(234, 179, 8, 0.16);
 }
 
 .day-cell.theme-yellow-cell .solar-num {
@@ -391,15 +412,19 @@ html, body {
 
 .month-rail.theme-yellow-rail {
   background-color: #eab308; /* Vàng đậm sang trọng như ảnh vẽ */
-  color: #18181b; /* Chữ đen đậm rõ nét */
+  color: #000000; /* Chữ số đen đậm rõ nét */
   border-left-color: rgba(202, 138, 4, 0.4);
 }
 
-/* Theme Tím Khoai Môn Nhạt (Soft Taro Purple / Lilac) */
+.month-rail.theme-yellow-rail .month-rail-badge {
+  border-bottom-color: rgba(0, 0, 0, 0.22);
+}
+
+/* Theme Tím Khoai Môn Nhạt (Soft Pastel Taro Purple / Lilac) - Nhạt dịu tinh tế */
 .day-cell.theme-taro-cell {
-  background-color: #ede9fe; /* Tím khoai môn nhạt thanh nhã */
-  border-right: 0.5px solid rgba(139, 92, 246, 0.28);
-  border-bottom: 0.5px solid rgba(139, 92, 246, 0.28);
+  background-color: #f5f3ff; /* Violet-50: Tím khoai môn pastel siêu nhạt */
+  border-right: 0.5px solid rgba(139, 92, 246, 0.16);
+  border-bottom: 0.5px solid rgba(139, 92, 246, 0.16);
 }
 
 .day-cell.theme-taro-cell .solar-num {
@@ -411,16 +436,20 @@ html, body {
 }
 
 .month-rail.theme-taro-rail {
-  background-color: #6b46c1; /* Tím khoai môn sẫm như ảnh vẽ */
-  color: #ffffff; /* Chữ trắng tinh */
+  background-color: #634d79; /* Tím khoai môn sẫm như ảnh vẽ */
+  color: #ffffff; /* Chữ số trắng tinh */
   border-left-color: rgba(85, 60, 154, 0.4);
+}
+
+.month-rail.theme-taro-rail .month-rail-badge {
+  border-bottom-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Dark Mode Theme Adjustment */
 [data-theme="dark"] .day-cell.theme-yellow-cell {
-  background-color: #2a220e;
-  border-right-color: rgba(234, 179, 8, 0.16);
-  border-bottom-color: rgba(234, 179, 8, 0.16);
+  background-color: #1e190b;
+  border-right-color: rgba(234, 179, 8, 0.12);
+  border-bottom-color: rgba(234, 179, 8, 0.12);
 }
 [data-theme="dark"] .day-cell.theme-yellow-cell .solar-num {
   color: #fef08a;
@@ -432,11 +461,27 @@ html, body {
   background-color: #a16207;
   color: #ffffff;
 }
+[data-theme="dark"] .month-rail.theme-yellow-rail .month-rail-badge {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
 
 [data-theme="dark"] .day-cell.theme-taro-cell {
-  background-color: #211638;
-  border-right-color: rgba(139, 92, 246, 0.16);
-  border-bottom-color: rgba(139, 92, 246, 0.16);
+  background-color: #191228;
+  border-right-color: rgba(139, 92, 246, 0.12);
+  border-bottom-color: rgba(139, 92, 246, 0.12);
+}
+[data-theme="dark"] .day-cell.theme-taro-cell .solar-num {
+  color: #e9d5ff;
+}
+[data-theme="dark"] .day-cell.theme-taro-cell .lunar-num {
+  color: #d8b4fe;
+}
+[data-theme="dark"] .month-rail.theme-taro-rail {
+  background-color: #581c87;
+  color: #ffffff;
+}
+[data-theme="dark"] .month-rail.theme-taro-rail .month-rail-badge {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 [data-theme="dark"] .day-cell.theme-taro-cell .solar-num {
   color: #e9d5ff;
@@ -861,11 +906,11 @@ html, body {
   right: 14px;
   max-width: 420px;
   margin: 0 auto;
-  background: #fffde7;
-  border: 1px solid rgba(234, 179, 8, 0.28);
-  border-radius: 12px;
-  padding: 10px 16px;
-  box-shadow: 0 16px 36px -4px rgba(180, 83, 9, 0.16), 0 6px 14px -2px rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 11px 18px;
+  box-shadow: 0 14px 34px -4px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
   z-index: 70;
   display: flex;
   align-items: center;
@@ -878,6 +923,12 @@ html, body {
   user-select: none;
   will-change: transform, opacity, top;
   transition: top 0.24s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+[data-theme="dark"] .day-detail-toast {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .day-detail-toast:active {
@@ -910,26 +961,64 @@ html, body {
 .toast-content {
   display: flex;
   flex-direction: column;
-  gap: 2.5px;
+  gap: 3px;
   width: 100%;
 }
 
 .toast-solar-title {
   font-size: 15px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: #0f172a;
+}
+
+[data-theme="dark"] .toast-solar-title {
+  color: #f8fafc;
 }
 
 .toast-lunar-desc {
   font-size: 13px;
   font-weight: 700;
-  color: var(--accent-gold);
+  color: #d97706; /* Màu hổ phách sang trọng */
+}
+
+[data-theme="dark"] .toast-lunar-desc {
+  color: #fbbf24;
+}
+
+.toast-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
 }
 
 .toast-canchi-tag {
   font-size: 11.5px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #64748b;
+}
+
+[data-theme="dark"] .toast-canchi-tag {
+  color: #94a3b8;
+}
+
+.toast-zodiac-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4f46e5;
+  background: #eef2ff;
+  padding: 1.5px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+[data-theme="dark"] .toast-zodiac-tag {
+  background: #312e81;
+  color: #c7d2fe;
 }
 
 /* ==========================================================================

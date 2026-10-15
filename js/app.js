@@ -63,6 +63,7 @@
   const toastSolarTitle = document.getElementById('toastSolarTitle');
   const toastLunarDesc = document.getElementById('toastLunarDesc');
   const toastCanChiTag = document.getElementById('toastCanChiTag');
+  const toastZodiacTag = document.getElementById('toastZodiacTag');
 
   let toastTimeout = null;
 
@@ -113,11 +114,10 @@
    */
   function renderMonthBlockHTML(year, month) {
     const sundays = getSundaysOfMonth(year, month);
+    const weeksCount = sundays.length;
     const isYellowMonth = (year * 12 + month) % 2 !== 0;
     const railClass = isYellowMonth ? 'theme-yellow-rail' : 'theme-taro-rail';
-    const monthStr = String(month).padStart(2, '0');
     const yearCanChi = VNLunar.getYearCanChi(year);
-    const railText = `${monthStr}/${year} ${yearCanChi}`;
 
     let daysHTML = '';
 
@@ -179,12 +179,17 @@
     }
 
     return `
-      <section class="month-block" id="month-${year}-${month}" data-year="${year}" data-month="${month}">
+      <section class="month-block" id="month-${year}-${month}" data-year="${year}" data-month="${month}" style="--weeks-count: ${weeksCount};">
         <div class="month-days-container">
           ${daysHTML}
         </div>
         <aside class="month-rail ${railClass}" data-year="${year}" data-month="${month}" title="Tháng ${month} năm ${year} (${yearCanChi})">
-          <span class="month-rail-text">${railText}</span>
+          <div class="month-rail-badge">
+            <span class="month-rail-num">${month}</span>
+          </div>
+          <div class="month-rail-body">
+            <span class="month-rail-year">${year}</span>
+          </div>
         </aside>
       </section>
     `;
@@ -322,6 +327,16 @@
     toastLunarDesc.textContent = lunarStr;
 
     toastCanChiTag.textContent = `Ngày ${dayCanChi} (Âm lịch)`;
+
+    if (toastZodiacTag && VNLunar.getZodiacSign) {
+      const zodiac = VNLunar.getZodiacSign(dd, mm);
+      if (zodiac && zodiac.name) {
+        toastZodiacTag.textContent = `${zodiac.symbol} Cung ${zodiac.name}`;
+        toastZodiacTag.style.display = '';
+      } else {
+        toastZodiacTag.style.display = 'none';
+      }
+    }
 
     const cell = targetCell ||
       calendarStage.querySelector(`.day-cell[data-day="${dd}"][data-month="${mm}"][data-year="${yy}"]`) ||
@@ -467,15 +482,27 @@
 
   /**
    * Updates today button active state according to scroll viewport visibility
+   * And automatically hides day detail toast when scrolling
    */
   let scrollThrottle = false;
   calendarViewport.addEventListener('scroll', () => {
+    // Tự động ẩn popup thông tin ngày khi user scroll lịch
+    if (dayDetailToast && dayDetailToast.classList.contains('is-visible')) {
+      hideDayDetail();
+    }
+
     if (!scrollThrottle) {
       requestAnimationFrame(() => {
         updateTodayButtonState();
         scrollThrottle = false;
       });
       scrollThrottle = true;
+    }
+  }, { passive: true });
+
+  calendarViewport.addEventListener('touchmove', () => {
+    if (dayDetailToast && dayDetailToast.classList.contains('is-visible')) {
+      hideDayDetail();
     }
   }, { passive: true });
 
