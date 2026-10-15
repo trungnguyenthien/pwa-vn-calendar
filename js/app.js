@@ -104,14 +104,15 @@
     for (let i = startCol - 1; i >= 0; i--) {
       const dayNum = prevMonthDaysCount - i;
       const lunar = VNLunar.convertSolar2Lunar(dayNum, prevMonth, prevYear);
-      const isSolarLast = dayNum === prevMonthDaysCount;
+      const isMonday = days.length % 7 === 0;
+      const showMonth = dayNum === 1 || isMonday;
       days.push({
         solarDay: dayNum,
         solarMonth: prevMonth,
         solarYear: prevYear,
         isOutside: true,
         lunar: lunar,
-        cellData: VNLunar.formatLunarCell(lunar, dayNum, isSolarLast),
+        cellData: VNLunar.formatLunarCell(lunar, showMonth),
         dayOfWeek: (startCol - 1 - i) % 7
       });
     }
@@ -120,14 +121,15 @@
     for (let dayNum = 1; dayNum <= totalDaysInMonth; dayNum++) {
       const lunar = VNLunar.convertSolar2Lunar(dayNum, month, year);
       const dayOfWeek = (startCol + dayNum - 1) % 7;
-      const isSolarLast = dayNum === totalDaysInMonth;
+      const isMonday = days.length % 7 === 0;
+      const showMonth = dayNum === 1 || isMonday;
       days.push({
         solarDay: dayNum,
         solarMonth: month,
         solarYear: year,
         isOutside: false,
         lunar: lunar,
-        cellData: VNLunar.formatLunarCell(lunar, dayNum, isSolarLast),
+        cellData: VNLunar.formatLunarCell(lunar, showMonth),
         dayOfWeek: dayOfWeek
       });
     }
@@ -140,13 +142,15 @@
     while (days.length < 42) {
       const lunar = VNLunar.convertSolar2Lunar(nextDayNum, nextMonth, nextYear);
       const dayOfWeek = days.length % 7;
+      const isMonday = days.length % 7 === 0;
+      const showMonth = nextDayNum === 1 || isMonday;
       days.push({
         solarDay: nextDayNum,
         solarMonth: nextMonth,
         solarYear: nextYear,
         isOutside: true,
         lunar: lunar,
-        cellData: VNLunar.formatLunarCell(lunar, nextDayNum),
+        cellData: VNLunar.formatLunarCell(lunar, showMonth),
         dayOfWeek: dayOfWeek
       });
       nextDayNum++;
