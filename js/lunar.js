@@ -206,15 +206,16 @@
   /**
    * Format lunar date label for display on calendar cell
    * @param {Object} lunar - Lunar date object { day, month, year, leap }
-   * @param {number} [solarDay] - Solar day number (1-31). If solarDay === 1, displays day/month
+   * @param {number} [solarDay] - Solar day number (1-31). If solarDay === 1 or isSolarLast, displays day/month
+   * @param {boolean} [isSolarLast] - Whether this is the last day of the solar month
    * Returns:
-   * - '1/M' or '1/M nhuận' if day == 1
-   * - 'D/M' or 'D/M nhuận' if solarDay == 1
+   * - '1/M' or '1/M nhuận' if lunar day == 1
+   * - 'D/M' or 'D/M nhuận' if solarDay == 1 or isSolarLast
    * - '15' (marked special)
    * - 'D' otherwise
    */
-  function formatLunarCell(lunar, solarDay = null) {
-    const isSolarFirst = solarDay === 1;
+  function formatLunarCell(lunar, solarDay = null, isSolarLast = false) {
+    const isSolarEdge = solarDay === 1 || Boolean(isSolarLast);
 
     if (lunar.day === 1) {
       return {
@@ -227,14 +228,14 @@
     }
     if (lunar.day === 15) {
       return {
-        text: isSolarFirst ? `15/${lunar.month}${lunar.leap ? 'N' : ''}` : '15',
+        text: isSolarEdge ? `15/${lunar.month}${lunar.leap ? 'N' : ''}` : '15',
         fullText: `Rằm tháng ${lunar.month}${lunar.leap ? ' (nhuận)' : ''}`,
         isFirstDay: false,
         isFullMoon: true,
         isLeap: Boolean(lunar.leap)
       };
     }
-    if (isSolarFirst) {
+    if (isSolarEdge) {
       return {
         text: `${lunar.day}/${lunar.month}${lunar.leap ? 'N' : ''}`,
         fullText: `Ngày ${lunar.day} tháng ${lunar.month}${lunar.leap ? ' (nhuận)' : ''}`,
