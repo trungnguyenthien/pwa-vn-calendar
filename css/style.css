@@ -106,9 +106,8 @@ html, body {
   justify-content: space-between;
   padding: 0 12px;
   background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: none;
   z-index: 20;
-  box-shadow: var(--shadow-sm);
 }
 
 .header-left {
@@ -381,7 +380,7 @@ html, body {
 }
 
 .month-card:first-child {
-  border-bottom: 1.5px solid var(--border-subtle);
+  border-bottom: none;
 }
 
 /* Month Sub-header */
@@ -582,7 +581,7 @@ html, body {
   justify-content: center;
   gap: 12px;
   background: var(--bg-surface);
-  border-top: 1px solid var(--border-subtle);
+  border-top: none;
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
@@ -595,7 +594,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Quick Month/Year Picker - Bottom Sheet
+   Quick Month/Year Picker - Top Sheet (Rớt từ trên xuống trong 200ms)
    ========================================================================== */
 
 .bottom-sheet-backdrop {
@@ -607,7 +606,7 @@ html, body {
   z-index: 100;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 200ms ease;
 }
 
 .bottom-sheet-backdrop.is-open {
@@ -619,20 +618,24 @@ html, body {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
-  max-height: 84vh;
+  top: 0;
+  bottom: auto;
+  max-height: 88vh;
   background: var(--bg-surface);
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  border-top: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  border-top: none;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
   display: flex;
   flex-direction: column;
-  padding: 12px 16px calc(16px + var(--safe-bottom)) 16px;
-  transform: translateY(100%);
-  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: calc(var(--safe-top) + 12px) 16px 14px 16px;
+  transform: translateY(-100%);
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 101;
   touch-action: pan-y;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bottom-sheet.is-open {
@@ -644,7 +647,7 @@ html, body {
   height: 4px;
   border-radius: 2px;
   background: var(--border-active);
-  margin: 0 auto 10px auto;
+  margin: 12px auto 2px auto;
   cursor: grab;
 }
 
@@ -652,7 +655,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -667,6 +670,52 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.sheet-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.sheet-btn-secondary {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.sheet-btn-secondary:hover {
+  background: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.sheet-btn-secondary:active {
+  transform: scale(0.96);
+}
+
+.sheet-btn-primary {
+  background: var(--accent-blue);
+  border: 1px solid var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.sheet-btn-primary:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.sheet-btn-primary:active {
+  transform: scale(0.96);
 }
 
 /* Year Section */

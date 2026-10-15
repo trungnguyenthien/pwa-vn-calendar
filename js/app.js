@@ -27,6 +27,7 @@
     year: currentDeviceYear,
     selectedDate: { day: currentDeviceDay, month: currentDeviceMonth, year: currentDeviceYear },
     sheetYear: currentDeviceYear,
+    sheetMonth: currentDeviceMonth,
     isSheetOpen: false
   };
 
@@ -45,7 +46,7 @@
   const bottomSheetBackdrop = document.getElementById('bottomSheetBackdrop');
   const sheetHandle = document.getElementById('sheetHandle');
   const sheetCloseBtn = document.getElementById('sheetCloseBtn');
-  const sheetTodayBtn = document.getElementById('sheetTodayBtn');
+  const sheetSubmitBtn = document.getElementById('sheetSubmitBtn');
   const sheetYearNum = document.getElementById('sheetYearNum');
   const sheetYearCanChi = document.getElementById('sheetYearCanChi');
   const yearStripContainer = document.getElementById('yearStripContainer');
@@ -109,7 +110,7 @@
         solarYear: prevYear,
         isOutside: true,
         lunar: lunar,
-        cellData: VNLunar.formatLunarCell(lunar),
+        cellData: VNLunar.formatLunarCell(lunar, dayNum),
         dayOfWeek: (startCol - 1 - i) % 7
       });
     }
@@ -124,7 +125,7 @@
         solarYear: year,
         isOutside: false,
         lunar: lunar,
-        cellData: VNLunar.formatLunarCell(lunar),
+        cellData: VNLunar.formatLunarCell(lunar, dayNum),
         dayOfWeek: dayOfWeek
       });
     }
@@ -143,7 +144,7 @@
         solarYear: nextYear,
         isOutside: true,
         lunar: lunar,
-        cellData: VNLunar.formatLunarCell(lunar),
+        cellData: VNLunar.formatLunarCell(lunar, nextDayNum),
         dayOfWeek: dayOfWeek
       });
       nextDayNum++;
@@ -863,32 +864,47 @@
     for (let m = 1; m <= 12; m++) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = `month-select-btn ${m === state.month && state.sheetYear === state.year ? 'is-active' : ''}`;
+      btn.className = `month-select-btn ${m === state.sheetMonth ? 'is-active' : ''}`;
       btn.textContent = `Tháng ${m}`;
       btn.setAttribute('data-month', m);
 
       btn.addEventListener('click', () => {
-        state.month = m;
-        state.year = state.sheetYear;
-        hideDayDetail();
-        renderCalendar();
-        closeBottomSheet();
+        state.sheetMonth = m;
+        const allBtns = monthsGrid.querySelectorAll('.month-select-btn');
+        allBtns.forEach((b) => {
+          const bm = parseInt(b.getAttribute('data-month'), 10);
+          if (bm === m) {
+            b.classList.add('is-active');
+          } else {
+            b.classList.remove('is-active');
+          }
+        });
       });
 
       monthsGrid.appendChild(btn);
     }
   }
 
+  function submitSheetSelection() {
+    state.month = state.sheetMonth;
+    state.year = state.sheetYear;
+    hideDayDetail();
+    renderCalendar();
+    closeBottomSheet();
+  }
+
   function openBottomSheet() {
     hideDayDetail();
     state.isSheetOpen = true;
     state.sheetYear = state.year;
+    state.sheetMonth = state.month;
     headerPickerBtn.classList.add('is-active');
     headerPickerBtn.setAttribute('aria-expanded', 'true');
 
     setSheetYear(state.sheetYear);
     populateMonthsGrid();
 
+    bottomSheet.style.transform = '';
     bottomSheetBackdrop.classList.add('is-open');
     bottomSheet.classList.add('is-open');
 
@@ -898,7 +914,7 @@
       if (activeChip) {
         activeChip.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
       }
-    }, 100);
+    }, 80);
   }
 
   function closeBottomSheet() {
@@ -906,6 +922,7 @@
     headerPickerBtn.classList.remove('is-active');
     headerPickerBtn.setAttribute('aria-expanded', 'false');
 
+    bottomSheet.style.transform = '';
     bottomSheetBackdrop.classList.remove('is-open');
     bottomSheet.classList.remove('is-open');
   }
@@ -925,6 +942,7 @@
   });
 
   sheetCloseBtn.addEventListener('click', closeBottomSheet);
+  sheetSubmitBtn.addEventListener('click', submitSheetSelection);
   bottomSheetBackdrop.addEventListener('click', closeBottomSheet);
 
   // Jump to today
@@ -938,7 +956,6 @@
   }
 
   todayBtn.addEventListener('click', jumpToToday);
-  sheetTodayBtn.addEventListener('click', jumpToToday);
 
   // Chevrons (Switch pairs of months)
   prevMonthBtn.addEventListener('click', () => changePair(-1, true));
@@ -960,28 +977,30 @@
     }
   });
 
-  // Drag down to close bottom sheet
+  // Drag up to close top sheet
   let sheetDragStartY = 0;
-  sheetHandle.addEventListener('pointerdown', (e) => {
-    sheetDragStartY = e.clientY;
-    sheetHandle.setPointerCapture(e.pointerId);
-  });
-  sheetHandle.addEventListener('pointermove', (e) => {
-    if (!sheetHandle.hasPointerCapture(e.pointerId)) return;
-    const dy = e.clientY - sheetDragStartY;
-    if (dy > 0) {
-      bottomSheet.style.transform = `translateY(${dy}px)`;
-    }
-  });
-  sheetHandle.addEventListener('pointerup', (e) => {
-    if (!sheetHandle.hasPointerCapture(e.pointerId)) return;
-    sheetHandle.releasePointerCapture(e.pointerId);
-    const dy = e.clientY - sheetDragStartY;
-    bottomSheet.style.transform = '';
-    if (dy > 80) {
-      closeBottomSheet();
-    }
-  });
+  if (sheetHandle) {
+    sheetHandle.addEventListener('pointerdown', (e) => {
+      sheetDragStartY = e.clientY;
+      sheetHandle.setPointerCapture(e.pointerId);
+    });
+    sheetHandle.addEventListener('pointermove', (e) => {
+      if (!sheetHandle.hasPointerCapture(e.pointerId)) return;
+      const dy = e.clientY - sheetDragStartY;
+      if (dy < 0) {
+        bottomSheet.style.transform = `translateY(${dy}px)`;
+      }
+    });
+    sheetHandle.addEventListener('pointerup', (e) => {
+      if (!sheetHandle.hasPointerCapture(e.pointerId)) return;
+      sheetHandle.releasePointerCapture(e.pointerId);
+      const dy = e.clientY - sheetDragStartY;
+      bottomSheet.style.transform = '';
+      if (dy < -60) {
+        closeBottomSheet();
+      }
+    });
+  }
 
   // Reposition toast on window resize/orientation change if active
   window.addEventListener('resize', () => {
