@@ -64,6 +64,7 @@
   const toastLunarDesc = document.getElementById('toastLunarDesc');
   const toastCanChiTag = document.getElementById('toastCanChiTag');
   const toastZodiacTag = document.getElementById('toastZodiacTag');
+  const toastHolidaysContainer = document.getElementById('toastHolidaysContainer');
 
   let toastTimeout = null;
 
@@ -280,6 +281,11 @@
       targetTop = cellRect.bottom + gap;
     }
 
+    // Safety clamp: Ensure toast never overflows past bottom of viewport
+    if (targetTop + toastHeight > window.innerHeight - 12) {
+      targetTop = Math.max(headerBottom + 6, window.innerHeight - toastHeight - 12);
+    }
+
     dayDetailToast.style.top = `${Math.round(targetTop)}px`;
   }
 
@@ -338,6 +344,39 @@
       }
     }
 
+    // Vietnamese Holidays & Commemorations
+    let hasHoliday = false;
+    if (toastHolidaysContainer) {
+      const holidays = (window.VNHolidays && typeof window.VNHolidays.getHolidays === 'function')
+        ? window.VNHolidays.getHolidays(dd, mm, yy, lunar.day, lunar.month, lunar.year, lunar.leap, VNLunar)
+        : [];
+
+      if (holidays && holidays.length > 0) {
+        hasHoliday = true;
+        toastHolidaysContainer.innerHTML = holidays.map((h) => {
+          const typeClass = `type-${h.type || 'national'}`;
+          const offBadge = h.isOff ? '<span class="toast-holiday-off-badge">Nghỉ lễ</span>' : '';
+          const icon = h.icon || '⭐';
+          const meaningHTML = h.meaning ? `<div class="toast-holiday-meaning">${h.meaning}</div>` : '';
+
+          return `
+            <div class="toast-holiday-item ${typeClass} ${h.isOff ? 'is-off' : ''}">
+              <div class="toast-holiday-header">
+                <span class="toast-holiday-icon">${icon}</span>
+                <span class="toast-holiday-name">${h.name}</span>
+                ${offBadge}
+              </div>
+              ${meaningHTML}
+            </div>
+          `;
+        }).join('');
+        toastHolidaysContainer.style.display = 'flex';
+      } else {
+        toastHolidaysContainer.innerHTML = '';
+        toastHolidaysContainer.style.display = 'none';
+      }
+    }
+
     const cell = targetCell ||
       calendarStage.querySelector(`.day-cell[data-day="${dd}"][data-month="${mm}"][data-year="${yy}"]`) ||
       calendarStage.querySelector('.day-cell.is-today') ||
@@ -352,10 +391,11 @@
     dayDetailToast.style.opacity = '';
     dayDetailToast.classList.add('is-visible');
 
-    // Auto dismiss after 3.5 seconds
+    // Auto dismiss: give extra reading time (5.2s) if day has holidays, else 3.5s
+    const dismissDuration = hasHoliday ? 5200 : 3500;
     toastTimeout = setTimeout(() => {
       hideDayDetail();
-    }, 3500);
+    }, dismissDuration);
   }
 
   // Swipe ngang để tắt popup chi tiết ngày
