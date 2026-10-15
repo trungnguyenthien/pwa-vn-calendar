@@ -153,6 +153,22 @@
         const showMonth = isFirstSolar || isMonday;
         const cellData = VNLunar.formatLunarCell(lunar, showMonth);
 
+        // Determine holiday corner badge (Top-Left triangle indicator)
+        let holidayCornerClass = '';
+        const holidaysModule = (typeof VNHolidays !== 'undefined') ? VNHolidays : (window.VNHolidays || null);
+        if (holidaysModule && typeof holidaysModule.getHolidays === 'function') {
+          const cellHolidays = holidaysModule.getHolidays(d.day, d.month, d.year, lunar.day, lunar.month, lunar.year, lunar.leap, VNLunar);
+          if (cellHolidays && cellHolidays.length > 0) {
+            if (cellHolidays.some(h => h.isOff || h.type === 'national')) {
+              holidayCornerClass = 'has-holiday-national';
+            } else if (cellHolidays.some(h => h.type === 'traditional')) {
+              holidayCornerClass = 'has-holiday-traditional';
+            } else if (cellHolidays.some(h => h.type === 'commemoration')) {
+              holidayCornerClass = 'has-holiday-commemoration';
+            }
+          }
+        }
+
         const cellClasses = [
           'day-cell',
           dayThemeClass,
@@ -161,7 +177,8 @@
           isToday ? 'is-today' : '',
           isSelected ? 'is-selected' : '',
           cellData.isFirstDay ? 'is-lunar-first' : '',
-          cellData.isFullMoon ? 'is-lunar-full' : ''
+          cellData.isFullMoon ? 'is-lunar-full' : '',
+          holidayCornerClass
         ]
           .filter(Boolean)
           .join(' ');
@@ -355,7 +372,6 @@
         hasHoliday = true;
         toastHolidaysContainer.innerHTML = holidays.map((h) => {
           const typeClass = `type-${h.type || 'national'}`;
-          const offBadge = h.isOff ? '<span class="toast-holiday-off-badge">Nghỉ lễ</span>' : '';
           const icon = h.icon || '⭐';
           const meaningHTML = h.meaning ? `<div class="toast-holiday-meaning">${h.meaning}</div>` : '';
 
@@ -364,7 +380,6 @@
               <div class="toast-holiday-header">
                 <span class="toast-holiday-icon">${icon}</span>
                 <span class="toast-holiday-name">${h.name}</span>
-                ${offBadge}
               </div>
               ${meaningHTML}
             </div>

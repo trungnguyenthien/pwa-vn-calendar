@@ -105,9 +105,14 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 0 12px;
-  background: var(--bg-surface);
-  border-bottom: none;
+  background: #eab308; /* Vàng đậm sang trọng (#eab308) */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   z-index: 20;
+}
+
+[data-theme="dark"] .app-header {
+  background: #ca8a04;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
 }
 
 .header-left {
@@ -129,18 +134,19 @@ html, body {
   gap: 6px;
   height: 32px;
   padding: 0 10px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
   transition: all 0.18s ease;
   font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .header-picker-btn:hover {
-  background: var(--border-subtle);
-  border-color: var(--border-active);
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.18);
 }
 
 .header-picker-btn:active {
@@ -172,7 +178,7 @@ html, body {
 .header-picker-btn .chevron-icon {
   width: 14px;
   height: 14px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   transition: transform 0.2s ease, color 0.18s ease;
 }
 
@@ -186,15 +192,14 @@ html, body {
   border-radius: 6px;
   background: transparent;
   border: 1px solid transparent;
-  color: var(--text-secondary);
+  color: #0f172a;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .icon-btn:hover {
-  background: var(--bg-surface-elevated);
-  color: var(--text-primary);
-  border-color: var(--border-subtle);
+  background: rgba(0, 0, 0, 0.08);
+  color: #000000;
 }
 
 .icon-btn:active {
@@ -208,20 +213,21 @@ html, body {
   height: 32px;
   padding: 0 10px;
   border-radius: 6px;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #334155;
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .today-chip-btn:hover {
-  background: var(--border-subtle);
-  color: var(--text-primary);
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 .today-chip-btn:active {
@@ -513,6 +519,7 @@ html, body {
   transition: background-color 0.12s ease, transform 0.1s ease;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
 }
 
 .day-cell:active {
@@ -583,6 +590,53 @@ html, body {
   box-shadow: inset 0 0 0 2px var(--accent-gold), 0 2px 6px rgba(217, 119, 6, 0.25);
   z-index: 2;
   border-radius: 4px;
+}
+
+/* ==========================================================================
+   Holiday Corner Triangle Badges (Top-Left)
+   ========================================================================== */
+
+.day-cell.has-holiday-national::before,
+.day-cell.has-holiday-traditional::before,
+.day-cell.has-holiday-commemoration::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 9.5px 9.5px 0 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Đỏ - Đại lễ Quốc gia & Ngày nghỉ lễ */
+.day-cell.has-holiday-national::before {
+  border-color: #ef4444 transparent transparent transparent;
+}
+
+/* Vàng hổ phách - Lễ tiết cổ truyền âm lịch */
+.day-cell.has-holiday-traditional::before {
+  border-color: #f59e0b transparent transparent transparent;
+}
+
+/* Xanh dương - Kỷ niệm lịch sử & Ngày truyền thống ngành nghề */
+.day-cell.has-holiday-commemoration::before {
+  border-color: #3b82f6 transparent transparent transparent;
+}
+
+/* Dark mode corner triangle colors */
+[data-theme="dark"] .day-cell.has-holiday-national::before {
+  border-color: #f87171 transparent transparent transparent;
+}
+
+[data-theme="dark"] .day-cell.has-holiday-traditional::before {
+  border-color: #fbbf24 transparent transparent transparent;
+}
+
+[data-theme="dark"] .day-cell.has-holiday-commemoration::before {
+  border-color: #60a5fa transparent transparent transparent;
 }
 
 /* ==========================================================================
@@ -907,10 +961,10 @@ html, body {
   max-width: 420px;
   margin: 0 auto;
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
-  padding: 11px 18px;
-  box-shadow: 0 14px 34px -4px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 11px 16px;
+  box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.12), 0 3px 10px rgba(15, 23, 42, 0.05);
   z-index: 70;
   display: flex;
   align-items: center;
@@ -927,7 +981,7 @@ html, body {
 
 [data-theme="dark"] .day-detail-toast {
   background: #1e293b;
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: #334155;
   box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -1037,33 +1091,30 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 7px 10px;
-  border-radius: 9px;
+  padding: 8px 12px;
+  border-radius: 5px;
   background: #f8fafc;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-left: 3.5px solid #64748b;
+  border: 1px solid #e2e8f0;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-/* Type: National / Đại lễ & Ngày lễ lớn */
-.toast-holiday-item.type-national {
+/* Type: National / Đại lễ & Ngày lễ lớn / Ngày nghỉ lễ */
+.toast-holiday-item.type-national,
+.toast-holiday-item.is-off {
   background: #fef2f2;
-  border-color: #fee2e2;
-  border-left-color: #ef4444;
+  border-color: #fecaca;
 }
 
 /* Type: Traditional / Lễ tiết cổ truyền âm lịch */
 .toast-holiday-item.type-traditional {
   background: #fffbeb;
-  border-color: #fef3c7;
-  border-left-color: #f59e0b;
+  border-color: #fde68a;
 }
 
 /* Type: Commemoration / Kỷ niệm & Truyền thống ngành nghề */
 .toast-holiday-item.type-commemoration {
   background: #eff6ff;
-  border-color: #dbeafe;
-  border-left-color: #3b82f6;
+  border-color: #bfdbfe;
 }
 
 .toast-holiday-header {
@@ -1085,7 +1136,8 @@ html, body {
   letter-spacing: -0.1px;
 }
 
-.toast-holiday-item.type-national .toast-holiday-name {
+.toast-holiday-item.type-national .toast-holiday-name,
+.toast-holiday-item.is-off .toast-holiday-name {
   color: #991b1b;
 }
 
@@ -1095,19 +1147,6 @@ html, body {
 
 .toast-holiday-item.type-commemoration .toast-holiday-name {
   color: #1e40af;
-}
-
-.toast-holiday-off-badge {
-  font-size: 9.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: #ffffff;
-  background: #dc2626;
-  padding: 1px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.3px;
-  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.25);
-  margin-left: auto;
 }
 
 .toast-holiday-meaning {
@@ -1120,29 +1159,27 @@ html, body {
 /* Dark mode styles for holiday cards */
 [data-theme="dark"] .toast-holiday-item {
   background: #0f172a;
-  border-color: rgba(255, 255, 255, 0.08);
-  border-left-color: #94a3b8;
+  border-color: #334155;
 }
 
-[data-theme="dark"] .toast-holiday-item.type-national {
+[data-theme="dark"] .toast-holiday-item.type-national,
+[data-theme="dark"] .toast-holiday-item.is-off {
   background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.25);
-  border-left-color: #f87171;
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 [data-theme="dark"] .toast-holiday-item.type-traditional {
   background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.25);
-  border-left-color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
 }
 
 [data-theme="dark"] .toast-holiday-item.type-commemoration {
   background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
-  border-left-color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.35);
 }
 
-[data-theme="dark"] .toast-holiday-item.type-national .toast-holiday-name {
+[data-theme="dark"] .toast-holiday-item.type-national .toast-holiday-name,
+[data-theme="dark"] .toast-holiday-item.is-off .toast-holiday-name {
   color: #fca5a5;
 }
 
