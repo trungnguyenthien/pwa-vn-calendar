@@ -12,7 +12,7 @@
   <title>Lịch Việt - Lịch Âm Dương Song Song</title>
 
   <!-- PWA Manifest & Icons -->
-  <link rel="manifest" href="./manifest.json?v=27">
+  <link rel="manifest" href="./manifest.json?v=28">
   <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Stylesheet -->
-  <link rel="stylesheet" href="./css/style.css?v=27">
+  <link rel="stylesheet" href="./css/style.css?v=28">
 </head>
 <body>
 
@@ -78,34 +78,26 @@
       </div>
     </header>
 
-    <!-- Calendar Viewport (Gesture Area) -->
-    <main class="calendar-viewport" id="calendarViewport" role="region" aria-label="Lịch hai tháng">
-      <!-- Pull to Refresh to Today Indicator -->
-      <div class="pull-refresh-indicator" id="pullRefreshIndicator" aria-hidden="true">
-        <div class="pull-refresh-icon-box">
-          <svg class="pull-refresh-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <polyline points="19 12 12 19 5 12"></polyline>
-          </svg>
-          <svg class="pull-refresh-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
-          </svg>
-        </div>
-        <span class="pull-refresh-text" id="pullRefreshText">Kéo xuống về Hôm nay</span>
+    <!-- Sticky Weekdays Header (7 Weekdays + 1 Month Rail Spacer) -->
+    <div class="calendar-weekdays-sticky" id="calendarWeekdays" aria-hidden="true">
+      <div class="weekdays-grid">
+        <div class="weekday-col">T2</div>
+        <div class="weekday-col">T3</div>
+        <div class="weekday-col">T4</div>
+        <div class="weekday-col">T5</div>
+        <div class="weekday-col">T6</div>
+        <div class="weekday-col is-saturday">T7</div>
+        <div class="weekday-col is-sunday">CN</div>
       </div>
+      <div class="weekday-month-spacer">Tháng</div>
+    </div>
 
+    <!-- Calendar Viewport (Continuous Vertical Flow) -->
+    <main class="calendar-viewport" id="calendarViewport" role="region" aria-label="Lịch Âm Dương">
       <div class="calendar-stage" id="calendarStage">
-        <!-- Rendered dynamically by app.js: 2 month cards -->
+        <!-- Rendered dynamically by app.js: continuous vertical month stream -->
       </div>
     </main>
-
-    <!-- Bottom Gesture Hint -->
-    <div class="gesture-hint-bar" aria-hidden="true">
-      <span>⇄ Vuốt ngang đổi cặp tháng</span>
-      <span>•</span>
-      <span>⤓ Kéo xuống về Hôm nay</span>
-    </div>
 
   </div>
 
@@ -165,7 +157,7 @@
   </aside>
 
   <!-- Scripts -->
-  <script src="./js/lunar.js?v=27"></script>
-  <script src="./js/app.js?v=27"></script>
+  <script src="./js/lunar.js?v=28"></script>
+  <script src="./js/app.js?v=28"></script>
 </body>
 </html>
