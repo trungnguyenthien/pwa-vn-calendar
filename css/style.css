@@ -73,7 +73,7 @@ html, body {
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  touch-action: none;
+  touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -309,6 +309,8 @@ html, body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   background: var(--bg-primary);
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
 }
 
 .calendar-stage {
@@ -1308,22 +1310,16 @@ html, body {
   transform: scale(0.95);
 }
 
-/* Touch Targets: minimum 44x44px (Rule 10) */
-.header-install-btn::after,
-.header-picker-btn::after,
-.today-chip-btn::after,
-.icon-btn::after,
-.sheet-btn::after,
-.year-nav-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 44px;
-  min-height: 44px;
-  width: 100%;
-  height: 100%;
+/* Touch Targets: ergonomic button sizing (Rule 10) */
+.header-picker-btn,
+.today-chip-btn,
+.header-install-btn {
+  min-height: 36px;
+}
+
+.icon-btn {
+  min-width: 38px;
+  min-height: 38px;
 }
 
 /* iOS Install Modal (Rule 6.B) */
@@ -1340,12 +1336,14 @@ html, body {
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
 .dialog-backdrop.open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .dialog-panel {
@@ -1484,6 +1482,7 @@ html, body {
   font-size: 13.5px;
   font-weight: 600;
   opacity: 0;
+  pointer-events: none;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
   max-width: 90vw;
   width: max-content;
@@ -1492,6 +1491,7 @@ html, body {
 .update-banner.is-visible {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
+  pointer-events: auto;
 }
 
 .update-banner-content {
