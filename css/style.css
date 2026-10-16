@@ -1256,3 +1256,337 @@ html, body {
   outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
+
+/* ==========================================================================
+   PWA Standards & Accessibility Compliance (Rules 6 & 10)
+   ========================================================================== */
+
+/* Universal Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Numeric alignment (Rule 10) */
+.app-container,
+.bottom-sheet,
+.day-detail-toast,
+.year-display,
+.day-cell,
+.weekdays-grid,
+.month-rail-name,
+.year-strip-container {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Header Install Button (Rule 6.A & 10 Touch Target) */
+.header-install-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: var(--accent-blue-bg);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.header-install-btn:hover {
+  background: var(--accent-blue);
+  color: #ffffff;
+}
+
+.header-install-btn:active {
+  transform: scale(0.95);
+}
+
+/* Touch Targets: minimum 44x44px (Rule 10) */
+.header-install-btn::after,
+.header-picker-btn::after,
+.today-chip-btn::after,
+.icon-btn::after,
+.sheet-btn::after,
+.year-nav-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+  width: 100%;
+  height: 100%;
+}
+
+/* iOS Install Modal (Rule 6.B) */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.dialog-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dialog-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transform: scale(0.92) translateY(10px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dialog-backdrop.open .dialog-panel {
+  transform: scale(1) translateY(0);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dialog-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.btn-icon-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+
+.btn-icon-close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.btn-icon-close:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+}
+
+.dialog-body {
+  padding: 20px;
+}
+
+.ios-install-lead {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.ios-install-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-surface-elevated);
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+}
+
+.ios-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.ios-step-item .step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ios-step-item .inline-icon {
+  display: inline-block;
+  vertical-align: -2px;
+  stroke: var(--accent-blue);
+}
+
+.dialog-footer {
+  padding: 12px 20px 20px;
+}
+
+.sheet-btn.full-width {
+  width: 100%;
+}
+
+/* In-App Update Notification Banner (Rule 6.D) */
+.update-banner {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--text-primary);
+  color: var(--bg-surface);
+  padding: 10px 16px;
+  border-radius: 50px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  font-size: 13.5px;
+  font-weight: 600;
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  max-width: 90vw;
+  width: max-content;
+}
+
+.update-banner.is-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.update-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.update-icon {
+  stroke: var(--accent-blue);
+  flex-shrink: 0;
+}
+
+.btn-update-reload {
+  border: none;
+  background: var(--accent-blue);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  min-height: 32px;
+}
+
+.btn-update-reload:hover {
+  opacity: 0.9;
+}
+
+/* PWA Feedback Snackbar (Rule 6.C) */
+.pwa-snackbar {
+  position: fixed;
+  top: calc(var(--safe-top) + 60px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.pwa-snackbar.is-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Reduced Motion (Rule 10) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark Mode Harmonization (Rule 10) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #0b0f19;
+    --bg-surface: #111827;
+    --bg-surface-elevated: #1f2937;
+    --bg-card: #111827;
+    
+    --border-subtle: #1f2937;
+    --border-active: #374151;
+    --border-card: #1f2937;
+
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-dimmed: #4b5563;
+
+    --accent-red: #f87171;
+    --accent-red-bg: rgba(239, 68, 68, 0.15);
+    --accent-blue: #60a5fa;
+    --accent-blue-bg: rgba(59, 130, 246, 0.15);
+    --accent-gold: #fbbf24;
+    --accent-gold-bg: rgba(245, 158, 11, 0.15);
+
+    --today-bg: #2563eb;
+    --today-text: #ffffff;
+    --today-glow: rgba(59, 130, 246, 0.35);
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+}
+

@@ -1,17 +1,19 @@
-const CACHE_NAME = 'vn-calendar-v42';
+const CACHE_NAME = 'vn-calendar-v43';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
-  './css/style.css?v=42',
+  './css/style.css?v=43',
   './js/lunar.js',
-  './js/lunar.js?v=42',
+  './js/lunar.js?v=43',
   './js/holidays.js',
-  './js/holidays.js?v=42',
+  './js/holidays.js?v=43',
   './js/app.js',
-  './js/app.js?v=42',
+  './js/app.js?v=43',
   './manifest.json',
-  './manifest.json?v=42',
+  './manifest.json?v=43',
+  './manifest.webmanifest',
+  './manifest.webmanifest?v=43',
   './icons/favicon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -42,13 +44,25 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// In-app update support: allow clients to trigger skipWaiting
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   const requestUrl = new URL(event.request.url);
+
+  // Ignore non-http schemes like chrome-extension:, data:, blob:
+  if (!requestUrl.protocol.startsWith('http')) return;
+
+  // Pass through requests outside app scope on same origin
   if (requestUrl.origin === self.location.origin && !event.request.url.startsWith(self.registration.scope)) {
-    return; // Pass through requests outside app scope
+    return;
   }
 
   event.respondWith(

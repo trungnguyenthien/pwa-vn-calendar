@@ -783,14 +783,181 @@
   });
 
   // ---------------------------------------------------------------------------
-  // PWA Service Worker Registration
+  // PWA Installation Management (Standard Rule 6)
   // ---------------------------------------------------------------------------
-  if ('serviceWorker' in navigator) {
+  let deferredInstallPrompt = null;
+
+  function showSnackbar(message, duration = 3000) {
+    const snackbar = document.getElementById('pwaSnackbar');
+    if (!snackbar) return;
+    snackbar.textContent = message;
+    snackbar.classList.remove('hidden');
+    void snackbar.offsetWidth;
+    snackbar.classList.add('is-visible');
+
+    setTimeout(() => {
+      snackbar.classList.remove('is-visible');
+      setTimeout(() => {
+        snackbar.classList.add('hidden');
+      }, 300);
+    }, duration);
+  }
+
+  function initPWAInstallation() {
+    const btnInstall = document.getElementById('btnInstall');
+    const iosInstallModal = document.getElementById('iosInstallModal');
+    const btnCloseIosModal = document.getElementById('btnCloseIosModal');
+    const btnGotItIos = document.getElementById('btnGotItIos');
+
+    // Check standalone mode (installed app)
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+
+    // Detect iOS Safari
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isStandalone) {
+      if (btnInstall) btnInstall.classList.add('hidden');
+    } else if (isIOS && btnInstall) {
+      // iOS Safari doesn't fire beforeinstallprompt; show button to open instructions
+      btnInstall.classList.remove('hidden');
+    }
+
+    // 1. Listen for beforeinstallprompt on Chromium (Android / Desktop)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      if (!isStandalone && btnInstall) {
+        btnInstall.classList.remove('hidden');
+      }
+    });
+
+    // 2. Listen for successful install
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      if (btnInstall) btnInstall.classList.add('hidden');
+      showSnackbar('Cài đặt ứng dụng thành công!');
+    });
+
+    // Helper to open/close iOS modal
+    const openIosModal = () => {
+      if (!iosInstallModal) return;
+      iosInstallModal.classList.remove('hidden');
+      void iosInstallModal.offsetWidth;
+      iosInstallModal.classList.add('open');
+    };
+
+    const closeIosModal = () => {
+      if (!iosInstallModal) return;
+      iosInstallModal.classList.remove('open');
+      setTimeout(() => {
+        iosInstallModal.classList.add('hidden');
+      }, 200);
+    };
+
+    // 3. Handle Install Button Click
+    if (btnInstall) {
+      btnInstall.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            btnInstall.classList.add('hidden');
+          }
+          deferredInstallPrompt = null;
+        } else if (iosInstallModal) {
+          openIosModal();
+        }
+      });
+    }
+
+    // Close iOS modal actions
+    [btnCloseIosModal, btnGotItIos].forEach((btn) => {
+      if (btn) btn.addEventListener('click', closeIosModal);
+    });
+
+    if (iosInstallModal) {
+      iosInstallModal.addEventListener('click', (e) => {
+        if (e.target === iosInstallModal) {
+          closeIosModal();
+        }
+      });
+    }
+
+    // Keyboard accessibility: ESC key to close modal or bottom sheet (Rule 10)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (iosInstallModal && iosInstallModal.classList.contains('open')) {
+          closeIosModal();
+        } else if (state.isSheetOpen) {
+          closeBottomSheet();
+        }
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // PWA Service Worker Registration & In-App Update Flow (Rule 3, 4, 6.D)
+  // ---------------------------------------------------------------------------
+  function initServiceWorkerWithUpdatePrompt() {
+    if (!('serviceWorker' in navigator)) return;
+
+    const updateBanner = document.getElementById('updateBanner');
+    const btnReloadUpdate = document.getElementById('btnReloadUpdate');
+    let waitingWorker = null;
+    let refreshing = false;
+
+    // Reload page once when new worker takes control
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
+    const showUpdatePrompt = (worker) => {
+      waitingWorker = worker;
+      if (updateBanner) {
+        updateBanner.classList.remove('hidden');
+        void updateBanner.offsetWidth;
+        updateBanner.classList.add('is-visible');
+      }
+    };
+
+    if (btnReloadUpdate) {
+      btnReloadUpdate.addEventListener('click', () => {
+        if (waitingWorker) {
+          waitingWorker.postMessage({ action: 'skipWaiting' });
+        } else {
+          window.location.reload();
+        }
+      });
+    }
+
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('./sw.js', { scope: './' })
         .then((reg) => {
           console.log('[PWA] Service Worker registered with scope:', reg.scope);
+
+          // If a worker is already waiting, prompt user
+          if (reg.waiting) {
+            showUpdatePrompt(reg.waiting);
+            return;
+          }
+
+          // Listen for new workers installing
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdatePrompt(newWorker);
+              }
+            });
+          });
         })
         .catch((err) => {
           console.warn('[PWA] Service Worker registration failed:', err);
@@ -801,6 +968,9 @@
   // ---------------------------------------------------------------------------
   // Initialize App
   // ---------------------------------------------------------------------------
+  initPWAInstallation();
+  initServiceWorkerWithUpdatePrompt();
+
   populateYearStrip();
   // Initial stream: from previous year Jan to next year Dec (36 continuous months)
   renderCalendarStream(currentDeviceYear - 1, 1, currentDeviceYear + 1, 12);
