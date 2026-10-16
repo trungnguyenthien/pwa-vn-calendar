@@ -501,10 +501,20 @@
       renderCalendarStream(currentDeviceYear - 1, 1, currentDeviceYear + 1, 12);
     }
 
+    if (!smooth) {
+      const targetBlock = document.getElementById(`month-${currentDeviceYear}-${currentDeviceMonth}`);
+      if (targetBlock) {
+        calendarViewport.scrollTop = targetBlock.offsetTop;
+      }
+      updateTodayButtonState();
+      if (state.isSheetOpen) closeBottomSheet();
+      return;
+    }
+
     requestAnimationFrame(() => {
       const todayCell = calendarStage.querySelector('.day-cell.is-today');
       if (todayCell) {
-        todayCell.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     });
 
@@ -795,12 +805,11 @@
   // Initial stream: from previous year Jan to next year Dec (36 continuous months)
   renderCalendarStream(currentDeviceYear - 1, 1, currentDeviceYear + 1, 12);
 
-  // Auto-scroll to today on initial load
-  window.addEventListener('DOMContentLoaded', () => {
-    jumpToToday(false);
-  });
-  setTimeout(() => {
-    jumpToToday(false);
-  }, 100);
+  // Position immediately to current month block without animation
+  const initialTodayBlock = document.getElementById(`month-${currentDeviceYear}-${currentDeviceMonth}`);
+  if (initialTodayBlock) {
+    calendarViewport.scrollTop = initialTodayBlock.offsetTop;
+  }
+  updateTodayButtonState();
 
 })();
