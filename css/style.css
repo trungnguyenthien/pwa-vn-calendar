@@ -397,14 +397,14 @@ html, body {
 }
 
 /* ==========================================================================
-   Two Alternating Background Themes: Xanh Khói (Mist Blue) & Oải Hương Pastel (Soft Lilac)
+   Two Alternating Background Themes: Xanh Biển Dịu (Sky Blue) & Kem Cát Ấm (Warm Sand)
    ========================================================================== */
 
-/* Theme 1: Xanh Khói (Mist Blue) - Dịu êm, thanh tĩnh, không chói mắt */
+/* Theme 1: Xanh Biển Dịu (Soft Sky Blue) - Mát dịu, thanh thoát, nhận diện rõ */
 .day-cell.theme-yellow-cell {
-  background-color: #f0f4f8; /* Xanh khói nhạt mát mắt */
-  border-right: 0.5px solid rgba(148, 163, 184, 0.22);
-  border-bottom: 0.5px solid rgba(148, 163, 184, 0.22);
+  background-color: #def0fb; /* Xanh da trời pastel dịu mát rõ rệt */
+  border-right: 0.5px solid rgba(2, 132, 199, 0.16);
+  border-bottom: 0.5px solid rgba(2, 132, 199, 0.16);
 }
 
 .day-cell.theme-yellow-cell .solar-num {
@@ -412,81 +412,81 @@ html, body {
 }
 
 .day-cell.theme-yellow-cell .lunar-num {
-  color: #475569;
+  color: #0284c7; /* Xanh dương đậm dịu mắt */
 }
 
 .month-rail.theme-yellow-rail {
-  background-color: #64748b; /* Slate xám xanh khói trang nhã, dịu mắt */
+  background-color: #0284c7; /* Xanh biển thanh lịch */
   color: #ffffff; /* Chữ số trắng tinh tế */
-  border-left-color: rgba(100, 116, 139, 0.25);
+  border-left-color: rgba(2, 132, 199, 0.3);
 }
 
 .month-rail.theme-yellow-rail .month-rail-badge {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgba(255, 255, 255, 0.22);
 }
 
-/* Theme 2: Oải Hương Pastel (Soft Lilac) - Thư giãn thị giác, êm dịu */
+/* Theme 2: Kem Cát Ấm (Warm Sand / Apricot Cream) - Ấm áp, thư thái, đối lập rõ ràng với màu xanh */
 .day-cell.theme-taro-cell {
-  background-color: #f5f3ff; /* Tím oải hương pastel siêu nhạt */
-  border-right: 0.5px solid rgba(168, 85, 247, 0.16);
-  border-bottom: 0.5px solid rgba(168, 85, 247, 0.16);
+  background-color: #faebe0; /* Kem cát / cam sữa pastel ấm áp rõ rệt */
+  border-right: 0.5px solid rgba(217, 119, 6, 0.16);
+  border-bottom: 0.5px solid rgba(217, 119, 6, 0.16);
 }
 
 .day-cell.theme-taro-cell .solar-num {
-  color: #1e1b4b;
+  color: #1c1917;
 }
 
 .day-cell.theme-taro-cell .lunar-num {
-  color: #6b21a8;
+  color: #b45309; /* Hổ phách trầm ấm dễ đọc */
 }
 
 .month-rail.theme-taro-rail {
-  background-color: #8b5cf6; /* Tím lavender pastel mềm mại, cao cấp */
+  background-color: #d97706; /* Hổ phách ấm áp sang trọng */
   color: #ffffff; /* Chữ số trắng tinh */
-  border-left-color: rgba(139, 92, 246, 0.25);
+  border-left-color: rgba(217, 119, 6, 0.3);
 }
 
 .month-rail.theme-taro-rail .month-rail-badge {
-  border-bottom-color: rgba(255, 255, 255, 0.2);
+  border-bottom-color: rgba(255, 255, 255, 0.22);
 }
 
 /* Dark Mode Theme Adjustment */
 [data-theme="dark"] .day-cell.theme-yellow-cell {
-  background-color: #0f172a;
-  border-right-color: rgba(148, 163, 184, 0.12);
-  border-bottom-color: rgba(148, 163, 184, 0.12);
+  background-color: #0c1e30; /* Xanh biển đêm dịu */
+  border-right-color: rgba(56, 189, 248, 0.14);
+  border-bottom-color: rgba(56, 189, 248, 0.14);
 }
 [data-theme="dark"] .day-cell.theme-yellow-cell .solar-num {
-  color: #e2e8f0;
+  color: #e0f2fe;
 }
 [data-theme="dark"] .day-cell.theme-yellow-cell .lunar-num {
-  color: #94a3b8;
+  color: #7dd3fc;
 }
 [data-theme="dark"] .month-rail.theme-yellow-rail {
-  background-color: #1e293b;
+  background-color: #0369a1;
   color: #ffffff;
 }
 [data-theme="dark"] .month-rail.theme-yellow-rail .month-rail-badge {
-  border-bottom-color: rgba(255, 255, 255, 0.18);
+  border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
 [data-theme="dark"] .day-cell.theme-taro-cell {
-  background-color: #181326;
-  border-right-color: rgba(168, 85, 247, 0.12);
-  border-bottom-color: rgba(168, 85, 247, 0.12);
+  background-color: #261710; /* Nâu hổ phách đêm dịu */
+  border-right-color: rgba(251, 146, 60, 0.14);
+  border-bottom-color: rgba(251, 146, 60, 0.14);
 }
 [data-theme="dark"] .day-cell.theme-taro-cell .solar-num {
-  color: #ede9fe;
+  color: #ffedd5;
 }
 [data-theme="dark"] .day-cell.theme-taro-cell .lunar-num {
-  color: #c4b5fd;
+  color: #fdba74;
 }
 [data-theme="dark"] .month-rail.theme-taro-rail {
-  background-color: #3b2d54;
+  background-color: #9a3412;
   color: #ffffff;
 }
 [data-theme="dark"] .month-rail.theme-taro-rail .month-rail-badge {
-  border-bottom-color: rgba(255, 255, 255, 0.18);
+  border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
 /* ==========================================================================

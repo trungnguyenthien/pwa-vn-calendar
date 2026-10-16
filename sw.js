@@ -1,17 +1,17 @@
-const CACHE_NAME = 'vn-calendar-v41';
+const CACHE_NAME = 'vn-calendar-v42';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
-  './css/style.css?v=41',
+  './css/style.css?v=42',
   './js/lunar.js',
-  './js/lunar.js?v=41',
+  './js/lunar.js?v=42',
   './js/holidays.js',
-  './js/holidays.js?v=41',
+  './js/holidays.js?v=42',
   './js/app.js',
-  './js/app.js?v=41',
+  './js/app.js?v=42',
   './manifest.json',
-  './manifest.json?v=41',
+  './manifest.json?v=42',
   './icons/favicon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
