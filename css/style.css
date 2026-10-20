@@ -86,7 +86,7 @@ html, body {
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-top: 0; /* Padding safe-top được chuyển trực tiếp vào app-header */
+  padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
