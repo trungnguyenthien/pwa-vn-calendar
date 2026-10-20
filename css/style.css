@@ -188,8 +188,8 @@ html, body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 6px;
   background: transparent;
   border: 1px solid transparent;
@@ -1285,30 +1285,28 @@ html, body {
 .header-update-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  height: 32px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   min-height: 36px;
-  padding: 0 10px;
+  padding: 0;
   border-radius: 6px;
-  background: var(--bg-surface-elevated, #f1f5f9);
-  border: 1px solid var(--border-subtle, #cbd5e1);
+  background: transparent;
+  border: 1px solid transparent;
   color: var(--text-secondary, #334155);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
-  white-space: nowrap;
 }
 
 .header-update-btn:hover {
-  background: #e2e8f0;
+  background: #f1f5f9;
   color: var(--text-primary);
 }
 
 .header-update-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 
 .header-update-btn .update-icon-svg {
@@ -1320,7 +1318,8 @@ html, body {
 .header-update-btn.is-updating {
   pointer-events: none;
   opacity: 0.8;
-  background: var(--bg-surface-elevated, #f1f5f9);
+  background: #f1f5f9;
+  color: var(--accent-blue);
 }
 
 .header-update-btn.is-updating .update-icon-svg {
@@ -1330,7 +1329,7 @@ html, body {
 /* Trạng thái đã sẵn sàng cập nhật (Update Ready - viền neon nổi bật) */
 .header-update-btn.is-ready {
   background: #eff6ff;
-  border-color: #2563eb;
+  border: 1px solid #2563eb;
   color: #2563eb;
   box-shadow: 0 0 10px rgba(37, 99, 235, 0.45);
   animation: pulse-update-ready 2s infinite ease-in-out;
@@ -1343,34 +1342,32 @@ html, body {
 
 @keyframes pulse-update-ready {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 6px rgba(37, 99, 235, 0.4);
     border-color: #2563eb;
   }
   50% {
-    box-shadow: 0 0 16px rgba(37, 99, 235, 0.8);
+    box-shadow: 0 0 14px rgba(37, 99, 235, 0.8);
     border-color: #1d4ed8;
   }
 }
 
-/* Header Install Button (Rule 6.A & 10 Touch Target) */
+/* Header Install Button (Rule 6.A & 10 Touch Target - Icon only) */
 .header-install-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  height: 32px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   min-height: 36px;
-  padding: 0 10px;
+  padding: 0;
   border-radius: 6px;
   background: var(--accent-blue-bg);
   border: 1px solid var(--accent-blue);
   color: var(--accent-blue);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
-  white-space: nowrap;
 }
 
 .header-install-btn:hover {
@@ -1379,7 +1376,7 @@ html, body {
 }
 
 .header-install-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 
 /* Touch Targets: ergonomic button sizing (Rule 10) */
@@ -1391,8 +1388,10 @@ html, body {
 }
 
 .icon-btn {
-  min-width: 38px;
-  min-height: 38px;
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
 }
 
 /* iOS Install Modal (Rule 6.B) */

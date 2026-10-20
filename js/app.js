@@ -927,16 +927,15 @@
       waitingWorker = worker;
       if (btnUpdateApp) {
         btnUpdateApp.classList.add('is-ready');
-        const textSpan = btnUpdateApp.querySelector('.update-btn-text');
-        if (textSpan) textSpan.textContent = 'Update Ready';
         btnUpdateApp.setAttribute('title', 'Đã có bản cập nhật mới! Nhấn để áp dụng ngay.');
+        btnUpdateApp.setAttribute('aria-label', 'Đã có bản cập nhật mới! Nhấn để áp dụng.');
       }
       if (updateBanner) {
         updateBanner.classList.remove('hidden');
         void updateBanner.offsetWidth;
         updateBanner.classList.add('is-visible');
       }
-      showSnackbar('Đã có bản cập nhật mới! Nhấn "Update Ready" để áp dụng.');
+      showSnackbar('Đã có bản cập nhật mới! Nhấn biểu tượng Cập nhật để áp dụng.');
     };
 
     // Xử lý Force Update khi nhấn nút "Cập nhật / Update App" trên Top App Bar
@@ -956,9 +955,8 @@
 
         // Đưa nút sang trạng thái đang cập nhật (spinner xoay, vô hiệu hoá click lặp)
         btnUpdateApp.classList.add('is-updating');
-        const textSpan = btnUpdateApp.querySelector('.update-btn-text');
-        const originalText = textSpan ? textSpan.textContent : 'Cập nhật';
-        if (textSpan) textSpan.textContent = 'Updating...';
+        btnUpdateApp.setAttribute('title', 'Đang kiểm tra & cập nhật...');
+        btnUpdateApp.setAttribute('aria-label', 'Đang cập nhật...');
 
         try {
           if (swRegistration) {
@@ -987,7 +985,8 @@
           console.warn('[PWA] Force update error:', err);
           showSnackbar('Kiểm tra cập nhật thất bại, vui lòng thử lại.');
           btnUpdateApp.classList.remove('is-updating');
-          if (textSpan) textSpan.textContent = originalText;
+          btnUpdateApp.setAttribute('title', 'Kiểm tra & Cập nhật ứng dụng');
+          btnUpdateApp.setAttribute('aria-label', 'Cập nhật ứng dụng');
         }
       });
     }
