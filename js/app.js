@@ -902,12 +902,17 @@
   // ---------------------------------------------------------------------------
   // PWA Service Worker Registration & In-App Update Flow (Rule 3, 4, 6.D)
   // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // PWA Service Worker Registration & In-App Update Flow (Rule 3, 4, 6.D)
+  // ---------------------------------------------------------------------------
   function initServiceWorkerWithUpdatePrompt() {
     if (!('serviceWorker' in navigator)) return;
 
+    const btnUpdateApp = document.getElementById('btnUpdateApp');
     const updateBanner = document.getElementById('updateBanner');
     const btnReloadUpdate = document.getElementById('btnReloadUpdate');
     let waitingWorker = null;
+    let swRegistration = null;
     let refreshing = false;
 
     // Reload page once when new worker takes control
@@ -917,14 +922,75 @@
       window.location.reload();
     });
 
-    const showUpdatePrompt = (worker) => {
+    // Cập nhật trạng thái hiển thị của nút "Update App" khi có worker mới
+    const markUpdateReady = (worker) => {
       waitingWorker = worker;
+      if (btnUpdateApp) {
+        btnUpdateApp.classList.add('is-ready');
+        const textSpan = btnUpdateApp.querySelector('.update-btn-text');
+        if (textSpan) textSpan.textContent = 'Update Ready';
+        btnUpdateApp.setAttribute('title', 'Đã có bản cập nhật mới! Nhấn để áp dụng ngay.');
+      }
       if (updateBanner) {
         updateBanner.classList.remove('hidden');
         void updateBanner.offsetWidth;
         updateBanner.classList.add('is-visible');
       }
+      showSnackbar('Đã có bản cập nhật mới! Nhấn "Update Ready" để áp dụng.');
     };
+
+    // Xử lý Force Update khi nhấn nút "Cập nhật / Update App" trên Top App Bar
+    if (btnUpdateApp) {
+      btnUpdateApp.addEventListener('click', async () => {
+        // 1. Kiểm tra trạng thái mạng
+        if (!navigator.onLine) {
+          showSnackbar('Không thể cập nhật khi đang offline');
+          return;
+        }
+
+        // Nếu đã có bản cập nhật đang chờ (is-ready) -> gửi skipWaiting để kích hoạt ngay
+        if (waitingWorker) {
+          waitingWorker.postMessage({ action: 'skipWaiting' });
+          return;
+        }
+
+        // Đưa nút sang trạng thái đang cập nhật (spinner xoay, vô hiệu hoá click lặp)
+        btnUpdateApp.classList.add('is-updating');
+        const textSpan = btnUpdateApp.querySelector('.update-btn-text');
+        const originalText = textSpan ? textSpan.textContent : 'Cập nhật';
+        if (textSpan) textSpan.textContent = 'Updating...';
+
+        try {
+          if (swRegistration) {
+            await swRegistration.update();
+            if (swRegistration.waiting) {
+              markUpdateReady(swRegistration.waiting);
+              swRegistration.waiting.postMessage({ action: 'skipWaiting' });
+              return;
+            }
+          }
+
+          // Xóa cache cũ & reload ép tải bản mới nhất từ CDN/Server
+          if ('caches' in window) {
+            const cacheKeys = await caches.keys();
+            await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+          }
+
+          // Nếu có swRegistration, unregister để cài worker mới sạch sẽ
+          if (swRegistration) {
+            await swRegistration.unregister();
+          }
+
+          // Ép tải bản mới với tham số query forceUpdate
+          window.location.href = window.location.pathname + '?forceUpdate=' + Date.now();
+        } catch (err) {
+          console.warn('[PWA] Force update error:', err);
+          showSnackbar('Kiểm tra cập nhật thất bại, vui lòng thử lại.');
+          btnUpdateApp.classList.remove('is-updating');
+          if (textSpan) textSpan.textContent = originalText;
+        }
+      });
+    }
 
     if (btnReloadUpdate) {
       btnReloadUpdate.addEventListener('click', () => {
@@ -940,11 +1006,12 @@
       navigator.serviceWorker
         .register('./sw.js', { scope: './' })
         .then((reg) => {
+          swRegistration = reg;
           console.log('[PWA] Service Worker registered with scope:', reg.scope);
 
           // If a worker is already waiting, prompt user
           if (reg.waiting) {
-            showUpdatePrompt(reg.waiting);
+            markUpdateReady(reg.waiting);
             return;
           }
 
@@ -954,7 +1021,7 @@
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdatePrompt(newWorker);
+                markUpdateReady(newWorker);
               }
             });
           });
