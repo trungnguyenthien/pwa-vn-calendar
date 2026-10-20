@@ -90,9 +90,22 @@ html, body {
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
-  background-color: var(--bg-primary);
+  background-color: #ffffff; /* Nền trắng liền mạch với thanh trạng thái (status bar) */
   position: relative;
   overflow: hidden;
+}
+
+/* Lớp phủ an toàn màu trắng cho vùng tai thỏ / status bar iOS */
+.app-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--safe-top);
+  background-color: #ffffff;
+  z-index: 25;
+  pointer-events: none;
 }
 
 /* ==========================================================================
@@ -533,6 +546,24 @@ html, body {
   line-height: 1;
   margin-top: 3px;
   white-space: nowrap;
+}
+
+/* Weekend Days Subtle Darker Background (T7 & CN hơi đậm hơn 1 tí) */
+.day-cell.is-saturday,
+.day-cell.is-sunday {
+  position: relative;
+}
+
+/* Theme Xanh: background đậm hơn một chút cho T7 & CN */
+.day-cell.theme-yellow-cell.is-saturday,
+.day-cell.theme-yellow-cell.is-sunday {
+  background-color: #cee5f7; /* Đậm hơn màu nền gốc #def0fb một tông tinh tế */
+}
+
+/* Theme Kem cát: background đậm hơn một chút cho T7 & CN */
+.day-cell.theme-taro-cell.is-saturday,
+.day-cell.theme-taro-cell.is-sunday {
+  background-color: #f3ddcf; /* Đậm hơn màu nền gốc #faebe0 một tông tinh tế */
 }
 
 /* Sunday Highlight */
