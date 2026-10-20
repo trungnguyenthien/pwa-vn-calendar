@@ -90,22 +90,9 @@ html, body {
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
-  background-color: #ffffff; /* Nền trắng liền mạch với thanh trạng thái (status bar) */
+  background-color: #ffffff; /* Nền trắng liền mạch tuyệt đối với status bar */
   position: relative;
   overflow: hidden;
-}
-
-/* Lớp phủ an toàn màu trắng cho vùng tai thỏ / status bar iOS */
-.app-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--safe-top);
-  background-color: #ffffff;
-  z-index: 25;
-  pointer-events: none;
 }
 
 /* ==========================================================================
@@ -120,6 +107,8 @@ html, body {
   justify-content: space-between;
   padding: 0 12px;
   background: #ffffff; /* Trắng thanh thoát, nhẹ nhàng */
+  border-top: none;
+  box-shadow: none;
   border-bottom: 1px solid #e2e8f0;
   z-index: 20;
 }
