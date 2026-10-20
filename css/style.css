@@ -69,7 +69,7 @@ html, body {
   overflow: hidden;
   position: fixed;
   overscroll-behavior-y: none; /* PWA Standard 6.D.1: Vô hiệu hóa pull-to-refresh và hiệu ứng nảy rubber-band */
-  background-color: var(--bg-primary);
+  background-color: #ffffff; /* Đồng bộ nền trắng toàn màn hình */
   color: var(--text-primary);
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
@@ -86,11 +86,11 @@ html, body {
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-top: var(--safe-top);
+  padding-top: 0; /* Padding safe-top được chuyển trực tiếp vào app-header */
   padding-bottom: var(--safe-bottom);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
-  background-color: #ffffff; /* Nền trắng liền mạch tuyệt đối với status bar */
+  background-color: #ffffff; /* Nền trắng liền mạch tuyệt đối */
   position: relative;
   overflow: hidden;
 }
@@ -100,13 +100,15 @@ html, body {
    ========================================================================== */
 
 .app-header {
-  height: 56px;
-  min-height: 56px;
+  height: calc(56px + var(--safe-top));
+  min-height: calc(56px + var(--safe-top));
+  padding-top: var(--safe-top);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
-  background: #ffffff; /* Trắng thanh thoát, nhẹ nhàng */
+  padding-left: 12px;
+  padding-right: 12px;
+  background: #ffffff; /* Trắng thanh thoát, trải dài qua tai thỏ/status bar */
   border-top: none;
   box-shadow: none;
   border-bottom: 1px solid #e2e8f0;
