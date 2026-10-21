@@ -1,48 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1e1b4b" />
+    <linearGradient id="mqGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d53a9" />
+      <stop offset="48%" stop-color="#523ea1" />
+      <stop offset="100%" stop-color="#8e2793" />
     </linearGradient>
-    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#e11d48" />
-      <stop offset="100%" stop-color="#f43f5e" />
-    </linearGradient>
-    <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbbf24" />
-      <stop offset="100%" stop-color="#f59e0b" />
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
   </defs>
 
-  <!-- App Background -->
-  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <!-- App Rounded Base -->
+  <rect width="512" height="512" rx="112" fill="url(#mqGrad)" />
 
-  <!-- Inner Calendar Body -->
-  <rect x="76" y="80" width="360" height="360" rx="48" fill="#1e293b" stroke="#334155" stroke-width="4" />
+  <!-- Calendar Glyph -->
+  <!-- Outer Frame -->
+  <rect x="90" y="104" width="332" height="318" rx="52" fill="none" stroke="#ffffff" stroke-width="26" stroke-linejoin="round" />
 
-  <!-- Calendar Header -->
-  <path d="M 76 128 A 48 48 0 0 1 124 80 L 388 80 A 48 48 0 0 1 436 128 L 436 180 L 76 180 Z" fill="url(#headerGrad)" />
+  <!-- Top Divider Line -->
+  <line x1="103" y1="192" x2="409" y2="192" stroke="#ffffff" stroke-width="26" stroke-linecap="round" />
 
-  <!-- Rings -->
-  <rect x="156" y="60" width="24" height="44" rx="12" fill="#f8fafc" />
-  <rect x="332" y="60" width="24" height="44" rx="12" fill="#f8fafc" />
+  <!-- Hanging Rings -->
+  <rect x="168" y="76" width="24" height="60" rx="12" fill="#ffffff" />
+  <rect x="320" y="76" width="24" height="60" rx="12" fill="#ffffff" />
 
-  <!-- Moon & Sun Motif -->
-  <!-- Crescent Moon -->
-  <path d="M 230 220 A 70 70 0 1 0 320 330 A 85 85 0 1 1 230 220 Z" fill="url(#moonGrad)" filter="url(#glow)" />
+  <!-- Grid Cells -->
+  <rect x="146" y="238" width="46" height="46" rx="14" fill="#ffffff" />
+  <rect x="233" y="238" width="46" height="46" rx="14" fill="#ffffff" opacity="0.45" />
+  <rect x="320" y="238" width="46" height="46" rx="14" fill="#ffffff" opacity="0.45" />
 
-  <!-- Star / Sun Sparkle -->
-  <circle cx="340" cy="245" r="14" fill="#fbbf24" />
-  <circle cx="370" cy="290" r="8" fill="#fde68a" />
-
-  <!-- Calendar Dots -->
-  <circle cx="150" cy="385" r="10" fill="#e11d48" />
-  <circle cx="205" cy="385" r="10" fill="#94a3b8" />
-  <circle cx="260" cy="385" r="10" fill="#94a3b8" />
-  <circle cx="315" cy="385" r="10" fill="#94a3b8" />
-  <circle cx="370" cy="385" r="10" fill="#38bdf8" />
+  <rect x="146" y="322" width="46" height="46" rx="14" fill="#ffffff" opacity="0.45" />
+  <rect x="233" y="322" width="46" height="46" rx="14" fill="#ffffff" />
+  <rect x="320" y="322" width="46" height="46" rx="14" fill="#ffffff" />
 </svg>

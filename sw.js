@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vn-calendar-v54';
+const CACHE_NAME = 'vn-calendar-v55';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,15 +11,17 @@ const ASSETS_TO_CACHE = [
   './js/app.js',
   './js/app.js?v=54',
   './manifest.json',
-  './manifest.json?v=54',
+  './manifest.json?v=55',
   './manifest.webmanifest',
-  './manifest.webmanifest?v=54',
+  './manifest.webmanifest?v=55',
   './icons/favicon.svg',
+  './icons/favicon.svg?v=55',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-192.png',
   './icons/icon-maskable-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './icons/apple-touch-icon.png?v=55'
 ];
 
 self.addEventListener('install', (event) => {
